@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Joi from "joi";
-import joiPasswordExtendCore from 'joi-password';
+import {joiPasswordExtendCore} from 'joi-password';
 
 const joiPassword = Joi.extend(joiPasswordExtendCore)
 const userSchema= mongoose.Schema({
@@ -11,13 +11,13 @@ const userSchema= mongoose.Schema({
         required:true,
         unique:true
     },
-    firstName:{
+    firstname:{
         type:String,
         minlength:3,
         maxlength:150,
         required:true
     },
-    lastName:{
+    lastname:{
         type:String,
         minlength:3,
         maxlength:150,
@@ -40,11 +40,13 @@ const userSchema= mongoose.Schema({
     }
 },{tumestamps:true})
 
-const validateUser=(user)=>{
+ export const validate=(user)=>{
 
     const schema= Joi.object({
-        firstName:Joi.string().min(3).max(150).required(),
-        lastName:Joi.string().min(3).max(150).required(),
+        firstname:Joi.string().min(3).max(150).required(),
+        lastname:Joi.string().min(3).max(150).required(),
+        // password:Joi.string().min(7).max(100).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+        phone:Joi.string().required(),
         email:Joi.string().min(12).max(250).required().email(),
         password:joiPassword
         .string()
@@ -70,12 +72,11 @@ const validateUser=(user)=>{
     return schema.validate(user, { abortEarly: false })
 }
 
-const User=mongoose.model('User', userSchema)
+export const User=mongoose.model('User', userSchema)
 
 
-module.exports={
-User, validate:validateUser
-}
+
+
 
 
 

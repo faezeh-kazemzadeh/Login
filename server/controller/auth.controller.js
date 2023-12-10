@@ -1,15 +1,12 @@
 import bcrypt from "bcrypt";
 import _ from "lodash";
 import { User, validate } from "../models/user.model.js";
-export const signup = async (req, res) => {
+import { errorHandler } from "../utils/error.js";
+export const signup = async (req, res, next) => {
   const { error } = validate(req.body);
-  if (error)
-    return res
-      .status(400)
-      .send({ code: 400, message: error.details[0].message });
+  if (error) next(errorHandler(400, error.details[0].message));
   let user = await User.findOne({ email: req.body.email });
-  if (user)
-    return res.status(400).send({ code: 400, message: "This User is exist" });
+  if (user) next(errorHandler(400, "This User is exist"));
 
   const salt = await bcrypt.genSalt(10);
   req.body.password = await bcrypt.hash(req.body.password, salt);
@@ -18,7 +15,10 @@ export const signup = async (req, res) => {
   );
   console.log(`user is ${user}`);
 
-  await user.save()
-  console.log(req.body.password);
-  res.send(_.pick(req.body, ["firstname", "lastname", "email", "password"]));
+  try {
+    await user.save();
+    res.send(_.pick(req.body, ["firstname", "lastname", "email", "password"]));
+  } catch (error) {
+    next(error);
+  }
 };

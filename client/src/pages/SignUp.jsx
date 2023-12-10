@@ -31,7 +31,7 @@ if(data.success===false){
   return
 }
 setIsLoading(false)
-setError(false)
+setError(null)
 navigate('/sign-in')
 } catch (err) {
   setIsLoading(false)

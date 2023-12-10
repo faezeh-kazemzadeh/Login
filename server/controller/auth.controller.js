@@ -13,11 +13,20 @@ export const signup = async (req, res, next) => {
   user = new User(
     _.pick(req.body, ["firstname", "lastname", "email", "password", "phone"])
   );
+
   console.log(`user is ${user}`);
 
   try {
     await user.save();
-    res.send(_.pick(req.body, ["firstname", "lastname", "email", "password"]));
+    const token = await user.generateAuthToken();
+    user.token = token;
+    
+    // Set 'Access-Control-Expose-Headers' header
+    res.set("Access-Control-Expose-Headers", "x-auth-token");
+
+    res
+      .header("x-auth-token", token)
+      .send(_.pick(req.body, ["firstname", "lastname", "email", "password"]));
   } catch (error) {
     next(error);
   }

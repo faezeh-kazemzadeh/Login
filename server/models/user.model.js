@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import Joi from "joi";
 import {joiPasswordExtendCore} from 'joi-password';
+import jwt from 'jsonwebtoken';
+
+const {sign} = jwt;
 
 const joiPassword = Joi.extend(joiPasswordExtendCore)
 const userSchema= mongoose.Schema({
@@ -45,7 +48,6 @@ const userSchema= mongoose.Schema({
     const schema= Joi.object({
         firstname:Joi.string().min(3).max(150).required(),
         lastname:Joi.string().min(3).max(150).required(),
-        // password:Joi.string().min(7).max(100).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
         phone:Joi.string().required(),
         email:Joi.string().min(12).max(250).required().email(),
         password:joiPassword
@@ -70,6 +72,10 @@ const userSchema= mongoose.Schema({
     })
 
     return schema.validate(user, { abortEarly: false })
+}
+
+userSchema.methods.generateAuthToken=async function(){
+    return sign({id:this._id,firstname:this.firstname,lastname:this.lastname,email:this.email,role:this.userRole},process.env.SECRET_KEY)
 }
 
 export const User=mongoose.model('User', userSchema)

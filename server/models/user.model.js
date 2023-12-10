@@ -41,7 +41,7 @@ const userSchema= mongoose.Schema({
         type:String,
         default:'User'
     }
-},{tumestamps:true})
+},{timestamps:true})
 
  export const validate=(user)=>{
 

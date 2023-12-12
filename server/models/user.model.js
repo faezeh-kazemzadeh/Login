@@ -17,18 +17,16 @@ const userSchema= mongoose.Schema({
     firstname:{
         type:String,
         minlength:3,
-        maxlength:150,
-        required:true
+        maxlength:150
     },
     lastname:{
         type:String,
         minlength:3,
-        maxlength:150,
-        required:true
+        maxlength:150
     },
     phone:{
         type:String,
-        required:true
+        // required:true
     },
     password:{
         type:String,
@@ -40,16 +38,21 @@ const userSchema= mongoose.Schema({
     userRole:{
         type:String,
         default:'User'
-    }
+    },
+    avatar:{
+      type: String,
+      default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+    },
 },{timestamps:true})
 
  export const validate=(user)=>{
 
     const schema= Joi.object({
-        firstname:Joi.string().min(3).max(150).required(),
-        lastname:Joi.string().min(3).max(150).required(),
-        phone:Joi.string().required(),
+        firstname:Joi.string().min(3).max(150),
+        lastname:Joi.string().min(3).max(150),
+        phone:Joi.string(),
         email:Joi.string().min(12).max(250).required().email(),
+        avatar:Joi.string(),
         password:joiPassword
         .string()
         .minOfSpecialCharacters(1)

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { app } from "../firebase";
 import {
   getStorage,
@@ -7,6 +7,8 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import { updateUserStart ,updateUserSuccess ,updateUserFailure } from "../redux/user/userSlice";
+
 export default function Profile() {
   const { currentUser } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
@@ -15,6 +17,7 @@ export default function Profile() {
   const [formData, setFormData] = useState({});
   const fileRef = useRef(null);
 
+  const dispatch=useDispatch();
 
   useEffect(() => {
     if (file) {
@@ -49,13 +52,36 @@ export default function Profile() {
   };
   const changeHandler = (e) => {
     setFormData({...formData,[e.target.name]:e.target.value})
+    console.log(formData)
   };
+  const submitHandler=async(e)=>{
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart())
+      const res= await fetch(`/api/user/update/${currentUser._id}`,{
+        method:"POST",
+        headers:{
+          "Content-Type":"aplication/json",
+        },
+        body:JSON.stringify(formData)
+      })
+      const data = await res.json()
+      console.log(data)
+      if(data.success === false){
+        dispatch(updateUserFailure(error.message))
+        return;
+      }
+      dispatch(updateUserSuccess(data))
+    } catch (error) {
+      dispatch(updateUserFailure(error.message))
+    }
+  }
   return (
     <div className="p-3 max-w-lg mx-auto ">
       <h1 className="text-slate-700 font-semibold text-3xl text-center my-7">
         Profile
       </h1>
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={submitHandler}>
         <input
           type="file"
           ref={fileRef}
@@ -85,36 +111,41 @@ export default function Profile() {
         <input
           type="text"
           className="p-3 rounded-lg"
-          value={currentUser.firstname && currentUser.firstname }
+          defaultValue={currentUser.firstname && currentUser.firstname }
           placeholder="firstname"
           onChange={changeHandler}
+          name="firstname"
         />
         <input
           type="text"
           className="p-3 rounded-lg"
-          value={currentUser.lastname && currentUser.lastname}
+          defaultValue={currentUser.lastname && currentUser.lastname}
           placeholder="Last Name"
           onChange={changeHandler}
+          name="lastname"
         />
         <input
           type="text"
           className="p-3 rounded-lg"
-          value={currentUser.phone && currentUser.phone }
+          defaultValue={currentUser.phone && currentUser.phone }
           placeholder="Phone"
           onChange={changeHandler}
+          name="phone"
         />
         <input
           type="email"
           className="p-3 rounded-lg"
-          value={currentUser.email}
+          defaultValue={currentUser.email}
           placeholder="E-mail"
           onChange={changeHandler}
+          name="email"
         />
         <input
           type="passwod"
           className="p-3 rounded-lg"
           placeholder="Password"
           onChange={changeHandler}
+          name="password"
         />
         <button
           type="submit"

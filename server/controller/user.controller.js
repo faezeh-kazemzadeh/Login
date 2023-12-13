@@ -21,15 +21,14 @@ export const updateUser = async (req, res, next) => {
           avatar: req.body.avatar,
           firstname:req.body.firstname,
           lastname:req.body.lastname,
-          phone:req.body.phone
+          phone:req.body.phone,
         },
       },
       { new: true }
     );
-
+console.log(updatedUser)
     const { password, ...rest } = updatedUser._doc;
-
-    res.status(200).json(rest);
+    res.status(200).send(rest);
   } catch (error) {
     next(error);
   }

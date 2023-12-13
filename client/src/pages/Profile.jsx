@@ -85,21 +85,21 @@ export default function Profile() {
         <input
           type="text"
           className="p-3 rounded-lg"
-          value={currentUser.firstname }
+          value={currentUser.firstname && currentUser.firstname }
           placeholder="firstname"
           onChange={changeHandler}
         />
         <input
           type="text"
           className="p-3 rounded-lg"
-          value={currentUser.lastname}
+          value={currentUser.lastname && currentUser.lastname}
           placeholder="Last Name"
           onChange={changeHandler}
         />
         <input
           type="text"
           className="p-3 rounded-lg"
-          value={currentUser.phone }
+          value={currentUser.phone && currentUser.phone }
           placeholder="Phone"
           onChange={changeHandler}
         />

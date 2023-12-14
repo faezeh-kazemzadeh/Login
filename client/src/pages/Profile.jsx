@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { app } from "../firebase";
 import {
   getStorage,
@@ -7,23 +7,28 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import { updateUserStart ,
-  updateUserSuccess ,
+import {
+  updateUserStart,
+  updateUserSuccess,
   updateUserFailure,
-deleteUserStart,
-deleteUserSuccess,
-deleteUserFailure } from "../redux/user/userSlice";
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
+  signOutUserStart,
+  signOutUserSuccess,
+  signOutUserFailure
+} from "../redux/user/userSlice";
 
 export default function Profile() {
-  const { currentUser , error , isLoading } = useSelector((state) => state.user);
+  const { currentUser, error, isLoading } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [filePerc, setFilePerc] = useState(0);
   const [formData, setFormData] = useState({});
-  const [updateSuccess,setUpdateSuccess]=useState(false)
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   const fileRef = useRef(null);
 
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (file) {
@@ -50,59 +55,71 @@ export default function Profile() {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setFormData({ ...formData, avatar: downloadURL });
-        setFileUploadError(false);
-
+          setFileUploadError(false);
         });
       }
     );
   };
   const changeHandler = (e) => {
-    setFormData({...formData,[e.target.name]:e.target.value})
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const submitHandler=async(e)=>{
+  const submitHandler = async (e) => {
     e.preventDefault();
     try {
-
-      dispatch(updateUserStart())
-      const res= await fetch(`/api/user/update/${currentUser._id}`,{
-        method:"POST",
-        headers:{
-          'Content-Type': 'application/json',
+      dispatch(updateUserStart());
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      })
-      const data = await res.json()
-      console.log(data)
-      if(data.success === false){
-        dispatch(updateUserFailure(data.message))
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.success === false) {
+        dispatch(updateUserFailure(data.message));
         return;
       }
-      dispatch(updateUserSuccess(data))
-      setUpdateSuccess(true)
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
     } catch (error) {
-      dispatch(updateUserFailure(error.message))
+      dispatch(updateUserFailure(error.message));
     }
-  }
+  };
 
-  const deleteUserHandler=async(e)=>{
- e.preventDefault();
- dispatch(deleteUserStart())
- try {
-  const res = await fetch(`/api/user/delete/${currentUser._id}`,{
-    method:"DELETE",
-  })
-  const data = res.json();
-  if(data.success=== false){
-    dispatch(deleteUserFailure(data))
-    return
-  }
-  dispatch(deleteUserSuccess())
-  console.log(data)
- } catch (error) {
-  dispatch(deleteUserFailure(error.message))
- }
+  const deleteUserHandler = async (e) => {
+    e.preventDefault();
+    dispatch(deleteUserStart());
+    try {
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+      });
+      const data = res.json();
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data));
+        return;
+      }
+      dispatch(deleteUserSuccess());
+      console.log(data);
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+    }
+  };
 
-
+  const signOutHandler =async(e)=>{
+    e.preventDefault();
+    dispatch(signOutUserStart())
+    try {
+      const res = await fetch('/api/auth/signout')
+      const data =res.json()
+      if(data.success === false){
+        dispatch(signOutUserFailure(data.message))
+        return
+      }
+      dispatch(signOutUserSuccess())
+    } catch (error) {
+      dispatch(signOutUserFailure(error.message))
+    }
   }
   return (
     <div className="p-3 max-w-lg mx-auto ">
@@ -124,22 +141,22 @@ export default function Profile() {
           onClick={() => fileRef.current.click()}
         />
         <p className="text-sm self-center">
-        {fileUploadError ? (
-          <span className="text-red-700">
-            Error Image upload (image must be less than 2 mb)
-          </span>
-        ) : filePerc > 0 && filePerc < 100 ? (
-          <span className="text-slate-500">{`Upload is ${filePerc}% Done.`}</span>
-        ) : filePerc === 100 ? (
-          <span className="text-green-700">Image successfully uploaded!</span>
-        ) : (
-          ""
-        )}
+          {fileUploadError ? (
+            <span className="text-red-700">
+              Error Image upload (image must be less than 2 mb)
+            </span>
+          ) : filePerc > 0 && filePerc < 100 ? (
+            <span className="text-slate-500">{`Upload is ${filePerc}% Done.`}</span>
+          ) : filePerc === 100 ? (
+            <span className="text-green-700">Image successfully uploaded!</span>
+          ) : (
+            ""
+          )}
         </p>
         <input
           type="text"
           className="p-3 rounded-lg"
-          defaultValue={currentUser.firstname && currentUser.firstname }
+          defaultValue={currentUser.firstname && currentUser.firstname}
           placeholder="firstname"
           onChange={changeHandler}
           name="firstname"
@@ -155,7 +172,7 @@ export default function Profile() {
         <input
           type="text"
           className="p-3 rounded-lg"
-          defaultValue={currentUser.phone && currentUser.phone }
+          defaultValue={currentUser.phone && currentUser.phone}
           placeholder="Phone"
           onChange={changeHandler}
           name="phone"
@@ -176,18 +193,31 @@ export default function Profile() {
           name="password"
         />
         <button
-          type="submit" disabled={isLoading}
+          type="submit"
+          disabled={isLoading}
           className="bg-slate-700 text-white p-3 rounded-lg hover:opacity-95 uppercase disabled:opacity-80"
         >
-          {isLoading ? 'updating...' :'update'}
+          {isLoading ? "updating..." : "update"}
         </button>
       </form>
       <div className="flex justify-between mt-3">
-        <span className="text-red-700 cursor-pointer" onClick={deleteUserHandler}>Delete Account</span>
-        <span className="text-red-700 cursor-pointer">Sign Out</span>
+        <span
+          className="text-red-700 cursor-pointer"
+          onClick={deleteUserHandler}
+        >
+          Delete Account
+        </span>
+        <span className="text-red-700 cursor-pointer" onClick={signOutHandler}>Sign Out</span>
       </div>
-      {error ? (<p className="text-red-700 self-center">{error }</p>) : updateSuccess ? (<p className="text-green-700 self-center">Profile updated successfully</p>):''}
-      
+      {error ? (
+        <p className="text-red-700 self-center">{error}</p>
+      ) : updateSuccess ? (
+        <p className="text-green-700 self-center">
+          Profile updated successfully
+        </p>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

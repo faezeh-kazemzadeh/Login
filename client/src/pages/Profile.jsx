@@ -10,11 +10,12 @@ import {
 import { updateUserStart ,updateUserSuccess ,updateUserFailure } from "../redux/user/userSlice";
 
 export default function Profile() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser , error , isLoading } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [filePerc, setFilePerc] = useState(0);
   const [formData, setFormData] = useState({});
+  const [updateSuccess,setUpdateSuccess]=useState(false)
   const fileRef = useRef(null);
 
   const dispatch=useDispatch();
@@ -72,6 +73,7 @@ export default function Profile() {
         return;
       }
       dispatch(updateUserSuccess(data))
+      setUpdateSuccess(true)
     } catch (error) {
       dispatch(updateUserFailure(error.message))
     }
@@ -148,16 +150,18 @@ export default function Profile() {
           name="password"
         />
         <button
-          type="submit"
+          type="submit" disabled={isLoading}
           className="bg-slate-700 text-white p-3 rounded-lg hover:opacity-95 uppercase disabled:opacity-80"
         >
-          update
+          {isLoading ? 'updating...' :'update'}
         </button>
       </form>
       <div className="flex justify-between mt-3">
         <span className="text-red-700 cursor-pointer">Delete Account</span>
         <span className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
+      {error ? (<p className="text-red-700 self-center">{error }</p>) : updateSuccess ? (<p className="text-green-700 self-center">Profile updated successfully</p>):''}
+      
     </div>
   );
 }

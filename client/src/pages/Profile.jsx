@@ -52,23 +52,23 @@ export default function Profile() {
   };
   const changeHandler = (e) => {
     setFormData({...formData,[e.target.name]:e.target.value})
-    console.log(formData)
   };
   const submitHandler=async(e)=>{
     e.preventDefault();
     try {
+
       dispatch(updateUserStart())
       const res= await fetch(`/api/user/update/${currentUser._id}`,{
         method:"POST",
         headers:{
-          "Content-Type":"aplication/json",
+          'Content-Type': 'application/json',
         },
-        body:JSON.stringify(formData)
+        body: JSON.stringify(formData),
       })
       const data = await res.json()
       console.log(data)
       if(data.success === false){
-        dispatch(updateUserFailure(error.message))
+        dispatch(updateUserFailure(data.message))
         return;
       }
       dispatch(updateUserSuccess(data))

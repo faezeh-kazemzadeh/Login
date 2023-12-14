@@ -12,9 +12,9 @@ export const updateUser = async (req, res, next) => {
     if (req.body.password) {
       req.body.password = bcrypt.hashSync(req.body.password, 10);
     }
-
+    console.log(req.params.id)
     const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
+      {_id :req.params.id},
       {
         $set: {
           password: req.body.password,
@@ -26,7 +26,7 @@ export const updateUser = async (req, res, next) => {
       },
       { new: true }
     );
-console.log(updatedUser)
+    console.log(updatedUser)
     const { password, ...rest } = updatedUser._doc;
     res.status(200).send(rest);
   } catch (error) {

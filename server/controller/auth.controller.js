@@ -39,17 +39,15 @@ export const signin = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const validUser =await User.findOne({ email });
-    console.log(validUser)
     if (!validUser) return next(errorHandler(404, "User Not found"));
     const validPassword =await bcrypt.compare(password, validUser.password);
-    console.log(validPassword)
     if (!validPassword) return next(errorHandler(401, "Wrong Credential"));
     const token = jwt.sign({ id: validUser._id }, process.env.SECRET_KEY);
     const{password:pass , ...rest}=validUser._doc
     res
       .cookie("access_token", token, {
         httpOnly: true,
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1),
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000 *30),
       })
       .status(200)
       .send(rest);
@@ -67,8 +65,7 @@ export const google =async (req,res,next)=>{
       const {password:pass,...rest}=user._doc
   
       res.cookie('access_token',token,{
-        httpOnly:true,
-        expires:new Date(Date.now()+24*60*60*1000)
+        httpOnly:true
       }).status(200).send(rest)
    
     }else{
@@ -85,10 +82,9 @@ export const google =async (req,res,next)=>{
       await newUser.save();
       const token = jwt.sign({id:newUser._id},process.env.SECRET_KEY)
       const {password:pass,...rest}=newUser._doc
-      res.cookie('access_token',token,{
-        httpOnly:true,
-        expires:new Date(Date.now()+24*60*60*1000)
-      }).status(200).send(rest)
+      res
+      .cookie('access_token',token,{httpOnly:true})
+      .status(200).send(rest)
     }
   } catch (error) {
     next(error)

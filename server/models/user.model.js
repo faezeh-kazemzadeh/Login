@@ -35,7 +35,7 @@ const userSchema= mongoose.Schema({
         trim:true,
         required:true
     },
-    userRole:{
+    roles:{
         type:String,
         default:'User'
     },
@@ -78,7 +78,7 @@ const userSchema= mongoose.Schema({
 }
 
 userSchema.methods.generateAuthToken=async function(){
-    return sign({id:this._id,firstname:this.firstname,lastname:this.lastname,email:this.email,role:this.userRole},process.env.SECRET_KEY)
+    return sign({id:this._id,firstname:this.firstname,lastname:this.lastname,email:this.email,role:this.roles},process.env.SECRET_KEY)
 }
 
 export const User=mongoose.model('User', userSchema)

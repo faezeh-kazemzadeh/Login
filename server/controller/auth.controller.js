@@ -42,7 +42,7 @@ export const signin = async (req, res, next) => {
     if (!validUser) return next(errorHandler(404, "User Not found"));
     const validPassword =await bcrypt.compare(password, validUser.password);
     if (!validPassword) return next(errorHandler(401, "Wrong Credential"));
-    const token = jwt.sign({ id: validUser._id }, process.env.SECRET_KEY);
+    const token = jwt.sign({ id: validUser._id , roles:validUser.roles}, process.env.SECRET_KEY);
     const{password:pass , ...rest}=validUser._doc
     res
       .cookie("access_token", token, {
@@ -61,7 +61,7 @@ export const google =async (req,res,next)=>{
     // console.log(req.body)
     const user = await User.findOne({email:req.body.email})
     if(user){
-      const token= jwt.sign({id:user._id},process.env.SECRET_KEY)
+      const token= jwt.sign({id:user._id, roles: user.roles},process.env.SECRET_KEY)
       const {password:pass,...rest}=user._doc
   
       res.cookie('access_token',token,{
@@ -80,7 +80,7 @@ export const google =async (req,res,next)=>{
         avatar:req.body.avatar
       }) 
       await newUser.save();
-      const token = jwt.sign({id:newUser._id},process.env.SECRET_KEY)
+      const token = jwt.sign({id:newUser._id , roles:newUser.roles},process.env.SECRET_KEY)
       const {password:pass,...rest}=newUser._doc
       res
       .cookie('access_token',token,{httpOnly:true})

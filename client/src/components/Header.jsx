@@ -31,17 +31,19 @@ export default function Header() {
             <Link to="/about">About</Link>
           </li>
           <li className=" text-slate-700 hover:underline">
-            <Link to="/profile">
+            
               {currentUser ? (
+                <Link to="/profile">
                 <img
                   src={currentUser.avatar}
                   alt="profile"
                   className="rounded-full w-7 h-7 object-cover"
                 />
-              ) : (
-                "Sign In"
-              )}
             </Link>
+
+              ) : (<Link to={'sign-in'}>
+                Sign In </Link>
+              )}
           </li>
         </ul>
       </div>

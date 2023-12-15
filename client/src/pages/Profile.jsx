@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { app } from "../firebase";
+import {Link, useNavigate} from 'react-router-dom';
 import {
   getStorage,
   ref,
@@ -26,6 +27,7 @@ export default function Profile() {
   const [filePerc, setFilePerc] = useState(0);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const navigate = useNavigate()
   const fileRef = useRef(null);
 
   const dispatch = useDispatch();
@@ -100,7 +102,7 @@ export default function Profile() {
         return;
       }
       dispatch(deleteUserSuccess());
-      console.log(data);
+      navigate('/sign-up')
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
@@ -117,6 +119,7 @@ export default function Profile() {
         return
       }
       dispatch(signOutUserSuccess())
+      navigate('/sign-in')
     } catch (error) {
       dispatch(signOutUserFailure(error.message))
     }
@@ -126,6 +129,7 @@ export default function Profile() {
       <h1 className="text-slate-700 font-semibold text-3xl text-center my-7">
         Profile
       </h1>
+      <Link to='/admin/dashboard'>dashboard</Link>
       <form className="flex flex-col gap-4" onSubmit={submitHandler}>
         <input
           type="file"

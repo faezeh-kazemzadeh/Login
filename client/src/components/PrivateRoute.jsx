@@ -1,15 +1,14 @@
 import { useSelector } from "react-redux";
-import { Navigate, Outlet } from "react-router-dom";
-import UnAuthorized from "./UnAuthorized";
+import { Navigate, Outlet ,useLocation} from "react-router-dom";
 // Outlet is the component to show children
 export default function PrivateRoute({ allowedRoles }) {
   const { currentUser } = useSelector((state) => state.user);
-
-  return currentUser && allowedRoles.includes(currentUser.roles) ? (
+  const location = useLocation();
+  return (currentUser?.roles?.filter(role => allowedRoles?.includes(role)).length >= 1 ? 
     <Outlet />
-  ) : currentUser && !allowedRoles.includes(currentUser.roles) ? (
-    <UnAuthorized />
-  ) : (
-    <Navigate to="/sign-in" />
+  :  currentUser?.roles?.filter(role => allowedRoles?.includes(role)).length === 0 ? 
+    <Navigate to="/unauthorized" state={{ from: location }} replace={true}/>
+  : 
+    <Navigate to="/sign-in" state={{ from: location }} replace={true}/>
   );
 }

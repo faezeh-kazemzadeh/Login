@@ -10,14 +10,14 @@ import AuthenticationPrivateRoute from "./components/AuthenticationPrivateRoute"
 import AdminDashboard from "./components/AdminDashboard";
 import Layout from "./components/Layout";
 import { useSelector } from "react-redux";
-
+import UnAuthorized from "./components/UnAuthorized";
 const ROLES = {
   Admin: "Admin",
   Editor: "Editor",
   User: "User",
 };
 export default function App() {
-  const {currentUser} = useSelector(state=>state.user)
+  const { currentUser } = useSelector((state) => state.user);
 
   return (
     <>
@@ -34,13 +34,24 @@ export default function App() {
               <Route path="profile" element={<Profile />} />
             </Route>
             {/* <Route element={<AuthenticationPrivateRoute />}> */}
-            <Route path="sign-in" element={ currentUser ? <Navigate to='/' replace={true}/>: <SignIn />} />
-            <Route path="sign-up" element={currentUser ? <Navigate to='/'  replace={true}/>: <SignUp />} />
+            <Route
+              path="sign-in"
+              element={
+                currentUser ? <Navigate to="/" replace={true} /> : <SignIn />
+              }
+            />
+            <Route
+              path="sign-up"
+              element={
+                currentUser ? <Navigate to="/" replace={true} /> : <SignUp />
+              }
+            />
             {/* </Route> */}
             <Route path="about" element={<About />} />
             <Route element={<PrivateRoute allowedRoles={[ROLES.Admin]} />}>
               <Route path="admin/dashboard" element={<AdminDashboard />} />
             </Route>
+            <Route path="/unauthorized" element={<UnAuthorized />} />
           </Route>
         </Routes>
       </BrowserRouter>

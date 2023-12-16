@@ -36,7 +36,7 @@ const userSchema= mongoose.Schema({
         required:true
     },
     roles:{
-        type:String,
+        type:[String],
         default:'User'
     },
     avatar:{

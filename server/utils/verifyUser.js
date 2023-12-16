@@ -10,3 +10,12 @@ export const verifyToken = (req, res, next) => {
     next();
   });
 };
+
+export const authorize=(requiredRoles)=> (req,res,next)=>{
+  if(req.user.roles.filter(role=>requiredRoles.includes(role)).length ){
+      next()
+  }else{
+    return next(errorHandler(401, "UnAuthorized"));
+  }
+
+}

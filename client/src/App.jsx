@@ -1,16 +1,18 @@
 import { BrowserRouter } from "react-router-dom";
 
 
-import { ProductProvider } from "./context/ProductProvider";
+import ProductProvider  from "./context/ProductProvider";
 import { FiSettings } from "react-icons/fi";
 import Navbar from "./components/share/Navbar";
 import { Footer } from "./components/index";
+import ThemeProvider from './context/ThemeProvider.jsx';
 
 export default function App() {
 const activeMenu=false;
 
   return (
     <>
+    <ThemeProvider>
       <ProductProvider>
         <div>
         <BrowserRouter>
@@ -22,6 +24,7 @@ const activeMenu=false;
         </BrowserRouter>
         </div>
       </ProductProvider>
+      </ThemeProvider>
     </>
   );
 }

@@ -1,8 +1,8 @@
-import React, { useContext, useEffect } from "react";
-import { ProductContext } from "../../../context/ProductProvider";
+import {  useProducts } from "../../../context/ProductProvider";
 
 export default function AllProducts() {
-  const products = useContext(ProductContext);
+  const products = useProducts();
+  
   console.log(products);
 
   return (
@@ -10,7 +10,7 @@ export default function AllProducts() {
       <h1>AllProducts</h1>
   
       <div className="flex flex-col">
-      <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div className="overflow-x-auto">
         <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
           <div className="overflow-hidden">
           {products && products.length > 0 ? (

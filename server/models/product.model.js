@@ -1,5 +1,10 @@
 import Joi from 'joi'
+import objectId from 'joi-objectid';
 import mongoose from "mongoose";
+
+
+Joi.objectId = objectId(Joi);
+
 const productSchema = mongoose.Schema(
   {
     name: {
@@ -17,10 +22,10 @@ const productSchema = mongoose.Schema(
       type: String,
       enum: ["گل سر", "پیکسل"],
     },
-    imageUrls: {
-      type: Array,
-      required: true,
-    },
+    imageUrls: [{
+      type: mongoose.Types.ObjectId,
+      ref: 'Image',
+    }],
     regularPrice: {
       type: Number,
       required: true,
@@ -32,6 +37,10 @@ const productSchema = mongoose.Schema(
     count:{
       type:Number,
       required:true
+    },
+    isPublished:{
+      type:Boolean ,
+      default:false
     }
   },
   { timestamps: true }
@@ -45,7 +54,8 @@ export const validate = (product)=>{
         discount:Joi.number(),
         count:Joi.number().required(),
         category:Joi.string().valid('گل سر' ,'پیکسل').required(),
-        // images:Joi.array().items(Joi.string())
+        imageUrls:Joi.array().items(Joi.objectId()),
+        isPublished: Joi.boolean()
     });
     return schema.validate(product)
 }

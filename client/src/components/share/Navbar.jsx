@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 
 import {Header,Layout, PrivateRoute , UnAuthorized} from '../index'
 import {Home , SignIn,SignUp,About,Profile} from '../../pages/index';
-import {AllProducts,RemoveProduct,AddProduct,Dashboard} from '../admin/index' ;
+import {AllProducts,RemoveProduct,AddProduct,Dashboard, UpdateProduct} from '../admin/index' ;
 
 const ROLES = {
     Admin: "Admin",
@@ -42,11 +42,13 @@ export default function Navbar() {
               <Route element={<PrivateRoute allowedRoles={[ROLES.Admin]} />}>
                 <Route path="admin/dashboard/*" element={<Dashboard />}>
                   <Route path="product/add" element={<AddProduct />} />
+                  <Route path="product/update/:id" element={<UpdateProduct />} />
                   <Route path="product/delete" element={<RemoveProduct />} />
                   <Route path="product/getAll" element={<AllProducts />} />
                 </Route>
               </Route>
               <Route path="/unauthorized" element={<UnAuthorized />} />
+              <Route path="/*" element={<UnAuthorized />} />
             </Route>
           </Routes></>
   )

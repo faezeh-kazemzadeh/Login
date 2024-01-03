@@ -1,9 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
+import { useProducts } from "../../../context/ProductProvider";
 
 export default function AddProduct() {
   const [category, setCategory] = useState("گل سر");
   const [files, setFiles] = useState([]);
+  const {setNewProduct} = useProducts();
   // const [formData, setFormData] = useState(new FormData());
   const [initialFormData, setInitialFormData] = useState({
     imageUrls: [],
@@ -68,7 +70,9 @@ export default function AddProduct() {
     .then(res=>res.json())
     .then(data=>{
       console.log(data)
-      setFormData(initialFormData)
+      if(data.success===true){
+      setNewProduct(true)
+      setFormData(initialFormData)}
     })
     .catch(error=>setError(error))
   };

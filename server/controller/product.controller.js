@@ -55,6 +55,15 @@ export const update=async(req,res,next)=>{
 }
 // res.json({success:true})
 }
+export const remove=async(req,res,next)=>{
+  try {
+    console.log(req.params.id)
+    await Product.findByIdAndDelete(req.params.id)
+    res.status(200).json({success:true, })
+  } catch (error) {
+    next(error)
+  }
+}
 export const getAll =async (req, res, next) => {
   try {
     const products = await Product

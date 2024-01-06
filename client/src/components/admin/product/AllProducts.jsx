@@ -2,10 +2,28 @@ import {  useProducts } from "../../../context/ProductProvider";
 import { IoTrashBin } from "react-icons/io5";
 import { GrUpdate } from "react-icons/gr";
 import { Link } from "react-router-dom";
-
+import { useState } from "react";
 export default function AllProducts() {
+  const {setProductsChange} = useProducts();
   const {products} = useProducts();
-  
+  const [isDeleting, setIsDeleting] = useState(false)
+  const deleteHandler= async(id)=>{
+    try {
+      setIsDeleting(true)
+     const response=  await fetch(`/api/product/remove/${id}`,{
+      method:'DELETE'
+     }) 
+     if (response.ok) {
+    } else {
+      throw new Error('Failed to delete product');
+    }
+    } catch (error) {
+      console.log(error)
+    }finally{
+      setIsDeleting(false)
+      setProductsChange(true)
+    }
+  }
 
   return (
     <div>
@@ -65,7 +83,7 @@ export default function AllProducts() {
                     {product.count}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 flex gap-4">
-                    <button type="button"><IoTrashBin /></button>
+                    <button onClick={()=>deleteHandler(product._id)} disabled={isDeleting}><IoTrashBin /></button>
                     <Link to={`/admin/dashboard/product/update/${product._id}`}><GrUpdate /></Link>
                   </td>
                 </tr>

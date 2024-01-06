@@ -5,7 +5,7 @@ import { useProducts } from "../../../context/ProductProvider";
 export default function AddProduct() {
   const [category, setCategory] = useState("گل سر");
   const [files, setFiles] = useState([]);
-  const {setNewProduct} = useProducts();
+  const {setProductsChange} = useProducts();
   // const [formData, setFormData] = useState(new FormData());
   const [initialFormData, setInitialFormData] = useState({
     imageUrls: [],
@@ -71,7 +71,7 @@ export default function AddProduct() {
     .then(data=>{
       console.log(data)
       if(data.success===true){
-      setNewProduct(true)
+      setProductsChange(true)
       setFormData(initialFormData)}
     })
     .catch(error=>setError(error))

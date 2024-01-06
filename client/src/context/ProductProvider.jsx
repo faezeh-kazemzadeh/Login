@@ -4,7 +4,7 @@ export const ProductContext = createContext();
 
  const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
-  const [newProduct, setNewProduct]=useState(false)
+  const [productsChange, setProductsChange]=useState(false)
   useEffect(() => {
     const fetchProducts = async () => {
      try {
@@ -12,7 +12,7 @@ export const ProductContext = createContext();
       .then(response=>response.json())
       .then(data=> {
         setProducts(data)
-        setNewProduct(false)
+        setProductsChange(false)
       })
       // const res = await fetch("/api/product/getAll");
       // const data = await res.json();
@@ -22,9 +22,9 @@ export const ProductContext = createContext();
      }
     };
     fetchProducts();
-  }, [newProduct]);
+  }, [productsChange]);
   return (
-    <ProductContext.Provider value={{products,newProduct,setNewProduct}}>
+    <ProductContext.Provider value={{products,productsChange,setProductsChange}}>
       {children}
     </ProductContext.Provider>
   );

@@ -4,7 +4,7 @@ import { GrUpdate } from "react-icons/gr";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 export default function AllProducts() {
-  const {setProductsChange} = useProducts();
+  const {updateProducts} = useProducts();
   const {products} = useProducts();
   const [isDeleting, setIsDeleting] = useState(false)
   const deleteHandler= async(id)=>{
@@ -21,7 +21,7 @@ export default function AllProducts() {
       console.log(error)
     }finally{
       setIsDeleting(false)
-      setProductsChange(true)
+      updateProducts(true)
     }
   }
 
@@ -65,8 +65,8 @@ export default function AllProducts() {
                 >
                     <td className="whitespace-nowrap px-6 py-4 font-medium">
                     <img className=" w-10 h-10"
-        src={`http://localhost:3000/images/${ product.imageUrls[0].name}`}
-        srcSet={`http://localhost:3000/images/${product.imageUrls[0].name}`}
+        src={`/images/${ product.imageUrls[0].name}`}
+        srcSet={`/images/${product.imageUrls[0].name}`}
         alt={product.name}
       />
                   </td>

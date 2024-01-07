@@ -1,11 +1,15 @@
 import { useState } from "react";
 import axios from "axios";
+import { IoTrashBin } from "react-icons/io5";
+
 import { useProducts } from "../../../context/ProductProvider";
 
 export default function AddProduct() {
-  const [category, setCategory] = useState("گل سر");
   const [files, setFiles] = useState([]);
-  const {setProductsChange} = useProducts();
+  const { updateProducts } = useProducts();
+  const [images, setImages] = useState([]);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // const [formData, setFormData] = useState(new FormData());
   const [initialFormData, setInitialFormData] = useState({
     imageUrls: [],
@@ -43,10 +47,13 @@ export default function AddProduct() {
       });
       if (response.ok) {
         const data = await response.json();
+        const imagesId = data.imageUrls.map((image) => image._id);
+        setImages([...images, ...data.imageUrls]);
         setFormData({
           ...formData,
-          imageUrls: formData.imageUrls.concat(data.imageUrls),
+          imageUrls: formData.imageUrls.concat(imagesId),
         });
+        console.log(data);
       } else {
         const data = await response.json();
         setError(data.message);
@@ -57,24 +64,50 @@ export default function AddProduct() {
     }
     console.log(files);
   };
-  const submitHandler =async (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     console.log(formData);
-    await fetch('/api/product/add',{
-      method:'POST',
-      body:JSON.stringify(formData) ,
+    await fetch("/api/product/add", {
+      method: "POST",
+      body: JSON.stringify(formData),
       headers: {
         "Content-Type": "application/json",
       },
     })
-    .then(res=>res.json())
-    .then(data=>{
-      console.log(data)
-      if(data.success===true){
-      setProductsChange(true)
-      setFormData(initialFormData)}
-    })
-    .catch(error=>setError(error))
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.success === true) {
+          updateProducts(true);
+          setFormData(initialFormData);
+          setImages([]);
+        }
+      })
+      .catch((error) => setError(error));
+  };
+  const deleteHandler = async (id) => {
+    try {
+      setIsDeleting(true);
+      const response = await fetch(`/api/image/remove/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        const updatedImages = images.filter((image) => image._id !== id);
+        const updatedImagesIds = updatedImages.map((image) => image._id);
+        console.log(updatedImages);
+        setImages(updatedImages);
+        setFormData({
+          ...formData,
+          imageUrls: updatedImagesIds,
+        });
+      } else {
+        throw new Error("Failed to delete image");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
   return (
     <main className="p-3 max-w-4xl mx-auto">
@@ -95,6 +128,7 @@ export default function AddProduct() {
             maxLength="250"
             placeholder="Name"
             className=" border p-3 rounded-lg"
+            value={formData.name}
           />
           <textarea
             type="text"
@@ -106,11 +140,12 @@ export default function AddProduct() {
             maxLength="250"
             placeholder="Description"
             className=" border p-3 rounded-lg"
+            value={formData.description}
           />
           <select
             name="category"
             id="category"
-            value={category}
+            value={formData.category}
             onChange={changeHandler}
             className="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
@@ -125,8 +160,8 @@ export default function AddProduct() {
                 className="border-gray-300 p-3 rounded-lg"
                 name="regularPrice"
                 id="regularPrice"
-                defaultValue={0}
                 onChange={changeHandler}
+                value={formData.regularPrice}
               />
             </div>
             <div className="flex items-center gap-2 ">
@@ -136,7 +171,7 @@ export default function AddProduct() {
                 className="border-gray-300 p-3 rounded-lg"
                 name="discount"
                 id="discount"
-                defaultValue={0}
+                value={formData.discount}
                 min={0}
                 max={30}
                 onChange={changeHandler}
@@ -150,7 +185,7 @@ export default function AddProduct() {
                 className="border-gray-300 p-3 rounded-lg"
                 name="count"
                 id="count"
-                defaultValue={0}
+                value={formData.count}
                 onChange={changeHandler}
               />
             </div>
@@ -192,6 +227,7 @@ export default function AddProduct() {
               upload
             </button>
           </div>
+
           <button
             type="submit"
             disabled={!formData.imageUrls.length}
@@ -199,6 +235,24 @@ export default function AddProduct() {
           >
             Create Product
           </button>
+          {images &&
+            images.length > 0 &&
+            images.map((image) => (
+              <div key={image._id}>
+                <img
+                  className="h-20 w-20"
+                  src={`/images/${image.name}`}
+                  srcSet={`/images/${image.name}`}
+                  alt={image.name}
+                />
+                <button
+                  onClick={() => deleteHandler(image._id)}
+                  disabled={isDeleting}
+                >
+                  <IoTrashBin />
+                </button>
+              </div>
+            ))}
         </div>
       </form>
     </main>

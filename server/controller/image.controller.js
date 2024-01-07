@@ -68,16 +68,16 @@ export const uploadMultipleImage = async (req, res, next) => {
           return image.save();
         })
       );
-
-      const savedFileIds = savedFiles.map((savedFile) => savedFile._id);
-      console.log(savedFileIds , req.files);
+console.log(savedFiles)
+      const savedFileIds = savedFiles.map((savedFile) => savedFile._id );
+      // console.log(savedFileIds , req.files);
       if (savedFileIds.length === req.files.length) {
         res
           .status(200)
           .json({
             success: true,
             message: "Your files uploaded.",
-            imageUrls:savedFileIds,
+            imageUrls:savedFiles,
           });
       }
     });
@@ -85,3 +85,13 @@ export const uploadMultipleImage = async (req, res, next) => {
     next(error);
   }
 };
+
+export const remove=async(req,res,next)=>{
+  try {
+    console.log(req.params.id)
+    await Image.findByIdAndDelete(req.params.id)
+    res.status(200).json({success:true, })
+  } catch (error) {
+    next(error)
+  }
+}

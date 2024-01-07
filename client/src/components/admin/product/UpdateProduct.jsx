@@ -4,7 +4,7 @@ import { useProducts } from "../../../context/ProductProvider";
 
 export default function UpdateProduct() {
   const params = useParams();
-  const { setProductsChange } = useProducts();
+  const { updateProducts } = useProducts();
   const [updated, setUpdated] = useState(false);
   const { products } = useProducts();
   const [product, setProduct] = useState(undefined);
@@ -26,8 +26,6 @@ export default function UpdateProduct() {
   };
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log("submitHandler");
-
     await fetch("/api/product/update", {
       method: "POST",
       body: JSON.stringify(product),
@@ -37,7 +35,7 @@ export default function UpdateProduct() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setProductsChange(true);
+        updateProducts(true);
         setUpdated(false);
       });
     console.log(product);

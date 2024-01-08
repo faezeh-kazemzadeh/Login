@@ -2,11 +2,14 @@ import { useState } from "react";
 import axios from "axios";
 import { IoTrashBin } from "react-icons/io5";
 
-import { useProducts } from "../../../context/ProductProvider";
-
+// import { useProducts } from "../../../context/ProductProvider";
+import { addProduct } from "../../../redux/product/productsSlice";
+import { useDispatch } from "react-redux";
+import { uploadImages } from "../../../redux/upload/uploadFileSlice";
 export default function AddProduct() {
+  const dispatch = useDispatch()
   const [files, setFiles] = useState([]);
-  const { updateProducts } = useProducts();
+  // const { updateProducts } = useProducts();
   const [images, setImages] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -41,24 +44,25 @@ export default function AddProduct() {
       for (let i = 0; i < files?.length; i++) {
         imgData.append("files", files[i]);
       }
-      const response = await fetch("/api/image/upload/multiple", {
-        method: "POST",
-        body: imgData,
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const imagesId = data.imageUrls.map((image) => image._id);
-        setImages([...images, ...data.imageUrls]);
-        setFormData({
-          ...formData,
-          imageUrls: formData.imageUrls.concat(imagesId),
-        });
-        console.log(data);
-      } else {
-        const data = await response.json();
-        setError(data.message);
-        console.log(data);
-      }
+      dispatch(uploadImages(imgData))
+      // const response = await fetch("/api/image/upload/multiple", {
+      //   method: "POST",
+      //   body: imgData,
+      // });
+      // if (response.ok) {
+      //   const data = await response.json();
+      //   const imagesId = data.imageUrls.map((image) => image._id);
+      //   setImages([...images, ...data.imageUrls]);
+      //   setFormData({
+      //     ...formData,
+      //     imageUrls: formData.imageUrls.concat(imagesId),
+      //   });
+      //   console.log(data);
+      // } else {
+      //   const data = await response.json();
+      //   setError(data.message);
+      //   console.log(data);
+      // }
     } else {
       setError("Just pick minimum One Image or maximum 6 Images");
     }
@@ -67,23 +71,24 @@ export default function AddProduct() {
   const submitHandler = async (e) => {
     e.preventDefault();
     console.log(formData);
-    await fetch("/api/product/add", {
-      method: "POST",
-      body: JSON.stringify(formData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        if (data.success === true) {
-          updateProducts(true);
-          setFormData(initialFormData);
-          setImages([]);
-        }
-      })
-      .catch((error) => setError(error));
+    dispatch(addProduct(formData))
+    // await fetch("/api/product/add", {
+    //   method: "POST",
+    //   body: JSON.stringify(formData),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // })
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     console.log(data);
+    //     if (data.success === true) {
+    //       updateProducts(true);
+    //       setFormData(initialFormData);
+    //       setImages([]);
+    //     }
+    //   })
+    //   .catch((error) => setError(error));
   };
   const deleteHandler = async (id) => {
     try {
@@ -195,6 +200,7 @@ export default function AddProduct() {
                 name="isPublished"
                 id="isPublished"
                 className="w-5"
+                checked={formData.isPublished}
                 onChange={changeHandler}
               />
               <span>Publish</span>

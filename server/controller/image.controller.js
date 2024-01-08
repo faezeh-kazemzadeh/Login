@@ -69,6 +69,10 @@ export const uploadMultipleImage = async (req, res, next) => {
         })
       );
 console.log(savedFiles)
+const savedFileUrls = savedFiles.map((savedFile) => {
+  const { _id, name } = savedFile;
+  return { _id, name };
+});
       const savedFileIds = savedFiles.map((savedFile) => savedFile._id );
       // console.log(savedFileIds , req.files);
       if (savedFileIds.length === req.files.length) {
@@ -77,7 +81,7 @@ console.log(savedFiles)
           .json({
             success: true,
             message: "Your files uploaded.",
-            imageUrls:savedFiles,
+            imageUrls:savedFileUrls,
           });
       }
     });

@@ -2,7 +2,6 @@ import _ from "lodash";
 
 import { Product, validate } from "../models/product.model.js";
 import { errorHandler } from "../utils/error.js";
-
 export const add = async (req, res, next) => {
   console.log(req.body)
   const { error } = validate(req.body);
@@ -20,8 +19,10 @@ export const add = async (req, res, next) => {
         "count",
         "isPublished"
       ])
-    );
-  res.status(200).json({success:true ,message: 'Product added successfully' , product});
+    )
+    const populatedProduct = await Product.findById(product._id).populate('imageUrls','name _id');
+
+  res.status(200).json({success:true ,message: 'Product added successfully' , product:populatedProduct});
 
   } catch (error) {
     next(error);
@@ -30,6 +31,7 @@ export const add = async (req, res, next) => {
 
 export const update=async(req,res,next)=>{
   const {_id, ...rest}= req.body;
+  console.log(rest)
   const {error} = validate(rest)
   if (error) return next(errorHandler(400, error.details[0].message));
   try {
@@ -47,6 +49,8 @@ export const update=async(req,res,next)=>{
     ])
     
   ,{new:true})
+  .populate('imageUrls','name _id')
+  .select('name category description regularPrice discount count imageUrls isPublished');
   console.log(product)
   res.json({success:true , product})
   

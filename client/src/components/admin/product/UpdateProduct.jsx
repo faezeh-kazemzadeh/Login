@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProducts } from "../../../context/ProductProvider";
+import { useSelector , useDispatch} from "react-redux";
+import { setHasUpdate } from "../../../redux/product/productsSlice";
+import { updateProduct } from "../../../redux/product/productsSlice";
+import { IoTrashBin } from "react-icons/io5";
 
 export default function UpdateProduct() {
   const params = useParams();
-  const { updateProducts } = useProducts();
+  // const { updateProducts } = useProducts();
   const [updated, setUpdated] = useState(false);
-  const { products } = useProducts();
+  // const { products } = useProducts();
+  const { products } = useSelector(state=>state.products);
+  const dispatch = useDispatch();
+  
   const [product, setProduct] = useState(undefined);
   const [files, setFiles] = useState();
   useEffect(() => {
     const foundProduct = products.find((product) => product._id === params.id);
-    if (foundProduct) {
-      const images = foundProduct.imageUrls.map((image) => image._id);
-      const updatedProduct = { ...foundProduct, imageUrls: images };
-      setProduct(updatedProduct);
-    }
-  }, [products]);
+    // if (foundProduct) {
+    //   const images = foundProduct.imageUrls.map((image) => image._id);
+    //   const updatedProduct = { ...foundProduct, imageUrls: images };
+    //   setProduct(updatedProduct);
+    // }
+    setProduct(foundProduct)
+  }, []);
 
   const changeHandler = (e) => {
     if (e.target.type === "checkbox") {
@@ -26,18 +34,21 @@ export default function UpdateProduct() {
   };
   const submitHandler = async (e) => {
     e.preventDefault();
-    await fetch("/api/product/update", {
-      method: "POST",
-      body: JSON.stringify(product),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        updateProducts(true);
-        setUpdated(false);
-      });
+    if(updated){
+    dispatch(updateProduct(product))}
+    // await fetch("/api/product/update", {
+    //   method: "POST",
+    //   body: JSON.stringify(product),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // })
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     dispatch(setHasUpdate());
+    //     updateProducts(true);
+    //     setUpdated(false);
+    //   });
     console.log(product);
   };
   return (
@@ -167,6 +178,21 @@ export default function UpdateProduct() {
             >
               update
             </button>
+          {product.imageUrls && product.imageUrls.map(image=>(
+            <div key={image._id}>
+              <img      
+                  className="h-20 w-20"
+                  src={`/images/${image.name}`}
+                  srcSet={`/images/${image.name}`}
+                  alt={image.name} />
+                     <button
+                  // onClick={() => deleteHandler(image._id)}
+                  // disabled={isDeleting}
+                >
+                  <IoTrashBin />
+                </button>
+            </div>
+          ))}
           </div>
         </form>
       )}

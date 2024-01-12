@@ -3,9 +3,12 @@ import { useParams } from "react-router-dom";
 import { useProducts } from "../../../context/ProductProvider";
 import { useSelector , useDispatch} from "react-redux";
 import { setHasUpdate } from "../../../redux/product/productsSlice";
-import { updateProduct } from "../../../redux/product/productsSlice";
+import { updateProduct ,emptyProductTemp } from "../../../redux/product/productsSlice";
 import { IoTrashBin } from "react-icons/io5";
-
+import {
+  uploadImages,
+  removeImage,
+} from "../../../redux/upload/uploadFileSlice";
 export default function UpdateProduct() {
   const params = useParams();
   // const { updateProducts } = useProducts();
@@ -16,41 +19,53 @@ export default function UpdateProduct() {
   
   const [product, setProduct] = useState(undefined);
   const [files, setFiles] = useState();
+  const {  productTemp } = useSelector(
+    (state) => state.products
+  );
   useEffect(() => {
     const foundProduct = products.find((product) => product._id === params.id);
-    // if (foundProduct) {
-    //   const images = foundProduct.imageUrls.map((image) => image._id);
-    //   const updatedProduct = { ...foundProduct, imageUrls: images };
-    //   setProduct(updatedProduct);
-    // }
     setProduct(foundProduct)
   }, []);
-
+  useEffect(() => {
+    if (productTemp?.imageUrls.length > 0) {
+      setProduct({
+        ...product,
+        imageUrls: [
+          ...new Set([...product?.imageUrls, ...productTemp.imageUrls]),
+        ],
+      });
+      dispatch(emptyProductTemp())
+    }
+  }, [productTemp?.imageUrls]);
   const changeHandler = (e) => {
     if (e.target.type === "checkbox") {
       setProduct({ ...product, isPublished: e.target.checked });
     } else setProduct({ ...product, [e.target.name]: e.target.value });
     setUpdated(true);
   };
+  const imageUploadHandler = async () => {
+    if (files.length > 0 && files.length < 6) {
+      const imgData = new FormData();
+      for (let i = 0; i < files?.length; i++) {
+        imgData.append("files", files[i]);
+      }
+      dispatch(uploadImages(imgData));
+    }
+  }
   const submitHandler = async (e) => {
-    e.preventDefault();
-    if(updated){
-    dispatch(updateProduct(product))}
-    // await fetch("/api/product/update", {
-    //   method: "POST",
-    //   body: JSON.stringify(product),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // })
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     dispatch(setHasUpdate());
-    //     updateProducts(true);
-    //     setUpdated(false);
-    //   });
-    console.log(product);
+    e.preventDefault()
+    console.log(product)
+    try {
+      dispatch(updateProduct(product))
+    } catch (error) {
+      console.log(error)
+    }
   };
+  const deleteHandler=(id)=>{
+    dispatch(removeImage(id));
+    setProduct({ ...product, imageUrls: product.imageUrls.filter(image=>image._id !== id)})
+    setUpdated(true)
+  }
   return (
     <div className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">UpdateProduct</h1>
@@ -164,8 +179,8 @@ export default function UpdateProduct() {
               />
               <button
                 type="button"
-                // onClick={imageUploadHandler}
-                // disabled={files.length === 0 || formData.imageUrls.length > 5}
+                onClick={imageUploadHandler}
+                disabled={product.imageUrls.length > 5}
                 className="p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80 disabled:pointer-events-none"
               >
                 upload
@@ -173,7 +188,7 @@ export default function UpdateProduct() {
             </div>
             <button
               type="submit"
-              disabled={!updated}
+              // disabled={!updated}
               className="text-white uppercase bg-slate-700 p-3 rounded-lg hover:opacity-95 disabled:opacity-80"
             >
               update
@@ -186,7 +201,8 @@ export default function UpdateProduct() {
                   srcSet={`/images/${image.name}`}
                   alt={image.name} />
                      <button
-                  // onClick={() => deleteHandler(image._id)}
+                     type="button"
+                  onClick={() => deleteHandler(image._id)}
                   // disabled={isDeleting}
                 >
                   <IoTrashBin />

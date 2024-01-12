@@ -1,19 +1,21 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import { IoTrashBin } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
 
-// import { useProducts } from "../../../context/ProductProvider";
 import { addProduct } from "../../../redux/product/productsSlice";
-import { useDispatch } from "react-redux";
-import { uploadImages } from "../../../redux/upload/uploadFileSlice";
+import {
+  uploadImages,
+  removeImage,
+} from "../../../redux/upload/uploadFileSlice";
 export default function AddProduct() {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const {filesCount } = useSelector((state) => state.images);
+  const { imageUrls } = useSelector((state) => state.products.productTemp);
+  const {  productTemp } = useSelector(
+    (state) => state.products
+  );
   const [files, setFiles] = useState([]);
-  // const { updateProducts } = useProducts();
-  const [images, setImages] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  // const [formData, setFormData] = useState(new FormData());
   const [initialFormData, setInitialFormData] = useState({
     imageUrls: [],
     name: "",
@@ -27,8 +29,18 @@ export default function AddProduct() {
   const [formData, setFormData] = useState(initialFormData);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (productTemp?.imageUrls.length > 0) {
+      setFormData({
+        ...formData,
+        imageUrls: [
+          ...new Set([...formData.imageUrls, ...productTemp.imageUrls]),
+        ],
+      });
+     
+    }
+  }, [productTemp?.imageUrls]);
   const changeHandler = (e) => {
-    // e.preventDefault();
     if (e.target.type === "checkbox") {
       setFormData({ ...formData, isPublished: e.target.checked });
     } else
@@ -39,80 +51,30 @@ export default function AddProduct() {
   };
 
   const imageUploadHandler = async (e) => {
-    if (files.length > 0 && files.length < 7) {
+    if (files.length > 0 && files.length < 6) {
       const imgData = new FormData();
       for (let i = 0; i < files?.length; i++) {
         imgData.append("files", files[i]);
       }
-      dispatch(uploadImages(imgData))
-      // const response = await fetch("/api/image/upload/multiple", {
-      //   method: "POST",
-      //   body: imgData,
-      // });
-      // if (response.ok) {
-      //   const data = await response.json();
-      //   const imagesId = data.imageUrls.map((image) => image._id);
-      //   setImages([...images, ...data.imageUrls]);
-      //   setFormData({
-      //     ...formData,
-      //     imageUrls: formData.imageUrls.concat(imagesId),
-      //   });
-      //   console.log(data);
-      // } else {
-      //   const data = await response.json();
-      //   setError(data.message);
-      //   console.log(data);
-      // }
+      dispatch(uploadImages(imgData));
+
     } else {
       setError("Just pick minimum One Image or maximum 6 Images");
     }
-    console.log(files);
   };
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    dispatch(addProduct(formData))
-    // await fetch("/api/product/add", {
-    //   method: "POST",
-    //   body: JSON.stringify(formData),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // })
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     console.log(data);
-    //     if (data.success === true) {
-    //       updateProducts(true);
-    //       setFormData(initialFormData);
-    //       setImages([]);
-    //     }
-    //   })
-    //   .catch((error) => setError(error));
+    dispatch(addProduct(formData));
+    setFormData(initialFormData); 
+    setFiles([]); 
   };
   const deleteHandler = async (id) => {
-    try {
-      setIsDeleting(true);
-      const response = await fetch(`/api/image/remove/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        const updatedImages = images.filter((image) => image._id !== id);
-        const updatedImagesIds = updatedImages.map((image) => image._id);
-        console.log(updatedImages);
-        setImages(updatedImages);
-        setFormData({
-          ...formData,
-          imageUrls: updatedImagesIds,
-        });
-      } else {
-        throw new Error("Failed to delete image");
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsDeleting(false);
-    }
+    dispatch(removeImage(id));
+    const updatedImageUrls = formData.imageUrls.filter(
+      (imageUrl) => imageUrl !== id
+    );
+    setFormData({ ...formData, imageUrls: updatedImageUrls });
+    
   };
   return (
     <main className="p-3 max-w-4xl mx-auto">
@@ -227,7 +189,7 @@ export default function AddProduct() {
             <button
               type="button"
               onClick={imageUploadHandler}
-              disabled={files.length === 0 || formData.imageUrls.length > 5}
+              disabled={files.length === 0}
               className="p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80 disabled:pointer-events-none"
             >
               upload
@@ -236,14 +198,20 @@ export default function AddProduct() {
 
           <button
             type="submit"
-            disabled={!formData.imageUrls.length}
+            disabled={
+              // filesCount === 0 ||
+              imageUrls.length===0||
+              formData.imageUrls.length > 6 ||
+              formData.name.trim() === "" ||
+              formData.description.trim() === ""
+            }
             className="text-white uppercase bg-slate-700 p-3 rounded-lg hover:opacity-95 disabled:opacity-80"
           >
             Create Product
           </button>
-          {images &&
-            images.length > 0 &&
-            images.map((image) => (
+          {imageUrls &&
+            imageUrls.length > 0 &&
+            imageUrls.map((image) => (
               <div key={image._id}>
                 <img
                   className="h-20 w-20"
@@ -252,6 +220,7 @@ export default function AddProduct() {
                   alt={image.name}
                 />
                 <button
+                  type="button"
                   onClick={() => deleteHandler(image._id)}
                   disabled={isDeleting}
                 >

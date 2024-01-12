@@ -2,7 +2,7 @@ import { Image } from "../models/Image.model.js";
 import { errorHandler } from "../utils/error.js";
 import path from "path";
 import multer from "multer";
-
+import fs from 'fs'
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "upload/images");
@@ -92,10 +92,22 @@ const savedFileUrls = savedFiles.map((savedFile) => {
 
 export const remove=async(req,res,next)=>{
   try {
-    console.log(req.params.id)
-    await Image.findByIdAndDelete(req.params.id)
-    res.status(200).json({success:true, })
+    const image = await Image.findById(req.params.id);
+
+    if (!image) {
+      return res.status(404).json({ success: false, message: 'Image not found' });
+    }
+
+    fs.unlink(image.path, async(err) => {
+      if (err) {
+        return res.status(500).json({ success: false, message: 'Error deleting image file' });
+      }
+
+      await Image.deleteOne({ _id: req.params.id });
+      
+      res.status(200).json({ success: true, _id: req.params.id });
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
 }

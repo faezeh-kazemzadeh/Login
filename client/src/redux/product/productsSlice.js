@@ -7,14 +7,7 @@ const initialState = {
   error: null,
   hasUpdate: true,
   productTemp: {
-    imageUrls: [],
-    // name: "",
-    // description: "",
-    // category: "گل سر",
-    // regularPrice: 0,
-    // discount: 0,
-    // count: 0,
-    // isPublished: false
+    imageUrls: []
    },
 };
 const fetchProducts = createAsyncThunk("products/fetchProducts", () => {
@@ -48,7 +41,7 @@ const updateProduct = createAsyncThunk(
       });
   }
 );
-const addProduct = createAsyncThunk("products/add", (product, { dispatch }) => {
+const addProduct = createAsyncThunk("products/add", (product, { dispatch , rejectWithValue  }) => {
   product &&
     product.imageUrls &&
     product.imageUrls.length &&
@@ -70,7 +63,12 @@ const addProduct = createAsyncThunk("products/add", (product, { dispatch }) => {
         dispatch(emptyImages());
         dispatch(emptyProductTemp())
         return data;
+      }else{
+        return rejectWithValue(data.message);
       }
+    })
+    .catch((error) => {
+      return rejectWithValue(error.message);
     });
 });
 const productsSlice = createSlice({

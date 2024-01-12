@@ -64,9 +64,20 @@ export default function AddProduct() {
   };
   const submitHandler = async (e) => {
     e.preventDefault();
-    dispatch(addProduct(formData));
-    setFormData(initialFormData); 
-    setFiles([]); 
+    dispatch(addProduct(formData))
+    .unwrap()
+      .then((data) => {
+        // Code to execute if the dispatch is successful
+        console.log("Product added:", data);
+        setFormData(initialFormData); 
+        setFiles([]); 
+      })
+      .catch((error) => {
+        // Handle the error here
+        console.error("An error occurred:", error);
+        // You can also update the component state with the error message
+        setError(error);
+      });
   };
   const deleteHandler = async (id) => {
     dispatch(removeImage(id));

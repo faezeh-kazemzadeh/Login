@@ -95,12 +95,16 @@ export const remove=async(req,res,next)=>{
     const image = await Image.findById(req.params.id);
 
     if (!image) {
-      return res.status(404).json({ success: false, message: 'Image not found' });
+      return next(
+        errorHandler(404, 'Image not found')
+      )
     }
 
     fs.unlink(image.path, async(err) => {
       if (err) {
-        return res.status(500).json({ success: false, message: 'Error deleting image file' });
+        return next(
+          errorHandler(500, 'Error deleting image file')
+        )
       }
 
       await Image.deleteOne({ _id: req.params.id });

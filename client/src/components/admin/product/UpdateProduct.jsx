@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProducts } from "../../../context/ProductProvider";
-import { useSelector , useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { setHasUpdate } from "../../../redux/product/productsSlice";
-import { updateProduct ,emptyProductTemp } from "../../../redux/product/productsSlice";
+import {
+  updateProduct,
+  emptyProductTemp,
+} from "../../../redux/product/productsSlice";
 import { IoTrashBin } from "react-icons/io5";
 import {
   uploadImages,
@@ -14,17 +17,15 @@ export default function UpdateProduct() {
   // const { updateProducts } = useProducts();
   const [updated, setUpdated] = useState(false);
   // const { products } = useProducts();
-  const { products } = useSelector(state=>state.products);
+  const { products } = useSelector((state) => state.products);
   const dispatch = useDispatch();
-  
+
   const [product, setProduct] = useState(undefined);
   const [files, setFiles] = useState();
-  const {  productTemp } = useSelector(
-    (state) => state.products
-  );
+  const { productTemp } = useSelector((state) => state.products);
   useEffect(() => {
     const foundProduct = products.find((product) => product._id === params.id);
-    setProduct(foundProduct)
+    setProduct(foundProduct);
   }, []);
   useEffect(() => {
     if (productTemp?.imageUrls.length > 0) {
@@ -34,7 +35,7 @@ export default function UpdateProduct() {
           ...new Set([...product?.imageUrls, ...productTemp.imageUrls]),
         ],
       });
-      dispatch(emptyProductTemp())
+      dispatch(emptyProductTemp());
     }
   }, [productTemp?.imageUrls]);
   const changeHandler = (e) => {
@@ -50,22 +51,31 @@ export default function UpdateProduct() {
         imgData.append("files", files[i]);
       }
       dispatch(uploadImages(imgData));
-    }
-  }
-  const submitHandler = async (e) => {
-    e.preventDefault()
-    console.log(product)
-    try {
-      dispatch(updateProduct(product))
-    } catch (error) {
-      console.log(error)
+    }else{
+      console.log('Product must have at least one picture ')
     }
   };
-  const deleteHandler=(id)=>{
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    console.log(product);
+
+    dispatch(updateProduct(product))
+      .unwrap()
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  };
+  const deleteHandler = (id) => {
     dispatch(removeImage(id));
-    setProduct({ ...product, imageUrls: product.imageUrls.filter(image=>image._id !== id)})
-    setUpdated(true)
-  }
+    setProduct({
+      ...product,
+      imageUrls: product.imageUrls.filter((image) => image._id !== id),
+    });
+    setUpdated(true);
+  };
   return (
     <div className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">UpdateProduct</h1>
@@ -193,22 +203,24 @@ export default function UpdateProduct() {
             >
               update
             </button>
-          {product.imageUrls && product.imageUrls.map(image=>(
-            <div key={image._id}>
-              <img      
-                  className="h-20 w-20"
-                  src={`/images/${image.name}`}
-                  srcSet={`/images/${image.name}`}
-                  alt={image.name} />
-                     <button
-                     type="button"
-                  onClick={() => deleteHandler(image._id)}
-                  // disabled={isDeleting}
-                >
-                  <IoTrashBin />
-                </button>
-            </div>
-          ))}
+            {product.imageUrls &&
+              product.imageUrls.map((image) => (
+                <div key={image._id}>
+                  <img
+                    className="h-20 w-20"
+                    src={`/images/${image.name}`}
+                    srcSet={`/images/${image.name}`}
+                    alt={image.name}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => deleteHandler(image._id)}
+                    disabled={product.imageUrls.length===1}
+                  >
+                    <IoTrashBin />
+                  </button>
+                </div>
+              ))}
           </div>
         </form>
       )}

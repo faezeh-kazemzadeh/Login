@@ -7,8 +7,8 @@ const initialState = {
   error: null,
   hasUpdate: true,
   productTemp: {
-    imageUrls: []
-   },
+    imageUrls: [],
+  },
 };
 const fetchProducts = createAsyncThunk("products/fetchProducts", () => {
   return fetch("/api/product/getAll")
@@ -19,7 +19,7 @@ const fetchProducts = createAsyncThunk("products/fetchProducts", () => {
 });
 const updateProduct = createAsyncThunk(
   "products/update",
-  (product, { dispatch }) => {
+  (product, { dispatch , rejectWithValue }) => {
     product &&
       product.imageUrls &&
       product.imageUrls.length &&
@@ -36,41 +36,51 @@ const updateProduct = createAsyncThunk(
     })
       .then((response) => response.json())
       .then((data) => {
+        if (data.success === true) {
         dispatch(setHasUpdate(true));
         return data;
-      });
-  }
-);
-const addProduct = createAsyncThunk("products/add", (product, { dispatch , rejectWithValue  }) => {
-  product &&
-    product.imageUrls &&
-    product.imageUrls.length &&
-    (product = {
-      ...product,
-      imageUrls: product.imageUrls.map((item) => item._id),
-    });
-
-  return fetch("/api/product/add", {
-    method: "POST",
-    body: JSON.stringify(product),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success === true) {
-        dispatch(emptyImages());
-        dispatch(emptyProductTemp())
-        return data;
-      }else{
+      } else {
         return rejectWithValue(data.message);
       }
     })
     .catch((error) => {
       return rejectWithValue(error.message);
-    });
-});
+      });
+  }
+);
+const addProduct = createAsyncThunk(
+  "products/add",
+  (product, { dispatch, rejectWithValue }) => {
+    product &&
+      product.imageUrls &&
+      product.imageUrls.length &&
+      (product = {
+        ...product,
+        imageUrls: product.imageUrls.map((item) => item._id),
+      });
+
+    return fetch("/api/product/add", {
+      method: "POST",
+      body: JSON.stringify(product),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success === true) {
+          dispatch(emptyImages());
+          dispatch(emptyProductTemp());
+          return data;
+        } else {
+          return rejectWithValue(data.message);
+        }
+      })
+      .catch((error) => {
+        return rejectWithValue(error.message);
+      });
+  }
+);
 const productsSlice = createSlice({
   name: "product",
   initialState,
@@ -78,17 +88,17 @@ const productsSlice = createSlice({
     setHasUpdate: (state, action) => {
       state.hasUpdate = action.payload;
     },
-    emptyProductTemp:(state)=>{
-state.productTemp={
-    imageUrls: [],
-    // name: "",
-    // description: "",
-    // category: "گل سر",
-    // regularPrice: 0,
-    // discount: 0,
-    // count: 0,
-    // isPublished: false
-}
+    emptyProductTemp: (state) => {
+      state.productTemp = {
+        imageUrls: [],
+        // name: "",
+        // description: "",
+        // category: "گل سر",
+        // regularPrice: 0,
+        // discount: 0,
+        // count: 0,
+        // isPublished: false
+      };
     },
     newProductImages: (state, action) => {
       // state.productTemp.imageUrls = [
@@ -167,7 +177,7 @@ export const {
   newProductImages,
   deleteNewProductImages,
   setProductTemp,
-  emptyProductTemp
+  emptyProductTemp,
 } = productsSlice.actions;
 export default productsSlice.reducer;
 export { fetchProducts, updateProduct, addProduct };

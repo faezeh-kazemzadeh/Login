@@ -42,7 +42,7 @@ export default function UpdateProduct() {
     if (e.target.type === "checkbox") {
       setProduct({ ...product, isPublished: e.target.checked });
     } else setProduct({ ...product, [e.target.name]: e.target.value });
-    setUpdated(true);
+    dispatch(setHasUpdate(true));
   };
   const imageUploadHandler = async () => {
     if (files.length > 0 && files.length < 6) {
@@ -74,7 +74,7 @@ export default function UpdateProduct() {
       ...product,
       imageUrls: product.imageUrls.filter((image) => image._id !== id),
     });
-    setUpdated(true);
+    dispatch(setHasUpdate(true));
   };
   return (
     <div className="p-3 max-w-4xl mx-auto">
@@ -196,24 +196,19 @@ export default function UpdateProduct() {
                 upload
               </button>
             </div>
-            <button
-              type="submit"
-              // disabled={!updated}
-              className="text-white uppercase bg-slate-700 p-3 rounded-lg hover:opacity-95 disabled:opacity-80"
-            >
-              update
-            </button>
+            <div className="flex flex-wrap justify-evenly gap-2">
             {product.imageUrls &&
               product.imageUrls.map((image) => (
-                <div key={image._id}>
+                <div key={image._id} className="relative border  border-green-700 rounded-lg">
                   <img
-                    className="h-20 w-20"
+                    className="h-20 w-20 object-contain rounded-lg"
                     src={`/images/${image.name}`}
                     srcSet={`/images/${image.name}`}
                     alt={image.name}
                   />
                   <button
                     type="button"
+                    className="absolute top-0 right-0 p-3 text-slate-700 hover:text-red-700 rounded-lg uppercase hover:opacity-75"
                     onClick={() => deleteHandler(image._id)}
                     disabled={product.imageUrls.length===1}
                   >
@@ -221,6 +216,15 @@ export default function UpdateProduct() {
                   </button>
                 </div>
               ))}
+              </div>
+            <button
+              type="submit"
+              // disabled={!updated}
+              className="text-white uppercase bg-slate-700 p-3 rounded-lg hover:opacity-95 disabled:opacity-80"
+            >
+              update
+            </button>
+  
           </div>
         </form>
       )}

@@ -63,7 +63,7 @@ export const remove=async(req,res,next)=>{
   try {
     console.log(req.params.id)
     await Product.findByIdAndDelete(req.params.id)
-    res.status(200).json({success:true, })
+    res.status(200).json({success:true})
   } catch (error) {
     next(error)
   }
@@ -80,3 +80,11 @@ export const getAll =async (req, res, next) => {
     next(error)
   }
 };
+export const getProduct = async(req,res,next)=>{
+  try {
+    const product = await Product.findById(req.params.id).populate('imageUrls','mame _id')
+    res.status(200).json({product})
+  } catch (error) {
+    next(error)
+  }
+}

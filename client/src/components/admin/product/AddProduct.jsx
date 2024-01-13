@@ -204,7 +204,29 @@ export default function AddProduct() {
             </button>
           </div>
 
-          <button
+          <div className="flex flex-wrap justify-evenly gap-2">
+          {imageUrls &&
+            imageUrls.length > 0 &&
+            imageUrls.map((image) => (
+              <div key={image._id} className="relative border  border-green-700 rounded-lg">
+                <img
+                  className="h-20 w-20 object-contain rounded-lg"
+                  src={`/images/${image.name}`}
+                  srcSet={`/images/${image.name}`}
+                  alt={image.name}
+                />
+                <button
+                  type="button"
+                  className="absolute top-0 right-0 p-3 text-slate-700 hover:text-red-700 rounded-lg uppercase hover:opacity-75"
+                  onClick={() => deleteHandler(image._id)}
+                  disabled={isDeleting}
+                >
+                  <IoTrashBin /> 
+                </button>
+              </div>
+            ))}
+          </div>
+              <button
             type="submit"
             disabled={
               // filesCount === 0 ||
@@ -217,25 +239,6 @@ export default function AddProduct() {
           >
             Create Product
           </button>
-          {imageUrls &&
-            imageUrls.length > 0 &&
-            imageUrls.map((image) => (
-              <div key={image._id}>
-                <img
-                  className="h-20 w-20"
-                  src={`/images/${image.name}`}
-                  srcSet={`/images/${image.name}`}
-                  alt={image.name}
-                />
-                <button
-                  type="button"
-                  onClick={() => deleteHandler(image._id)}
-                  disabled={isDeleting}
-                >
-                  <IoTrashBin />
-                </button>
-              </div>
-            ))}
         </div>
       </form>
     </main>

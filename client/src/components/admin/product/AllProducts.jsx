@@ -1,11 +1,10 @@
-import { useProducts } from "../../../context/ProductProvider";
 import { IoTrashBin } from "react-icons/io5";
 import { GrUpdate } from "react-icons/gr";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../../../redux/product/productsSlice";
-
+import { setHasUpdate } from "../../../redux/product/productsSlice";
 export default function AllProducts() {
   // const { updateProducts } = useProducts();
   // const {products} = useProducts();
@@ -16,7 +15,7 @@ export default function AllProducts() {
     if (hasUpdate) {
       dispatch(fetchProducts());
     }
-  }, []);
+  }, [products , hasUpdate]);
   const deleteHandler = async (id) => {
     try {
       setIsDeleting(true);
@@ -24,6 +23,7 @@ export default function AllProducts() {
         method: "DELETE",
       });
       if (response.ok) {
+        dispatch(setHasUpdate(true))
       } else {
         throw new Error("Failed to delete product");
       }
@@ -71,12 +71,12 @@ export default function AllProducts() {
                     {products.map((product) => (
                       <tr key={product._id} className="border-b">
                         <td className="whitespace-nowrap px-6 py-4 font-medium">
-                          <img
+                          {product.imageUrls.length>0 && <img
                             className=" w-10 h-10"
                             src={`/images/${product.imageUrls[0].name}`}
                             srcSet={`/images/${product.imageUrls[0].name}`}
                             alt={product.name}
-                          />
+                          />}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 font-medium">
                           {product.name}

@@ -9,11 +9,9 @@ import {
 } from "../../../redux/upload/uploadFileSlice";
 export default function AddProduct() {
   const dispatch = useDispatch();
-  const {filesCount } = useSelector((state) => state.images);
   const { imageUrls } = useSelector((state) => state.products.productTemp);
-  const {  productTemp } = useSelector(
-    (state) => state.products
-  );
+  const { productTemp } = useSelector((state) => state.products);
+  const [uploading, setUploading] = useState(false);
   const [files, setFiles] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [initialFormData, setInitialFormData] = useState({
@@ -37,7 +35,6 @@ export default function AddProduct() {
           ...new Set([...formData.imageUrls, ...productTemp.imageUrls]),
         ],
       });
-     
     }
   }, [productTemp?.imageUrls]);
   const changeHandler = (e) => {
@@ -51,25 +48,28 @@ export default function AddProduct() {
   };
 
   const imageUploadHandler = async (e) => {
-    if (files.length > 0 && files.length < 6) {
+    if (files.length > 0 && formData.imageUrls.length + files.length < 7) {
       const imgData = new FormData();
       for (let i = 0; i < files?.length; i++) {
         imgData.append("files", files[i]);
       }
+      setUploading(true);
       dispatch(uploadImages(imgData));
-
+      setUploading(false);
     } else {
       setError("Just pick minimum One Image or maximum 6 Images");
+      setUploading(false);
     }
   };
   const submitHandler = async (e) => {
     e.preventDefault();
+    if(formData.imageUrls.length<1) return setError('Just pick minimum One Image or maximum 6 Images')
     dispatch(addProduct(formData))
-    .unwrap()
+      .unwrap()
       .then((data) => {
         console.log("Product added:", data);
-        setFormData(initialFormData); 
-        setFiles([]); 
+        setFormData(initialFormData);
+        setFiles([]);
       })
       .catch((error) => {
         console.error("An error occurred:", error);
@@ -82,12 +82,10 @@ export default function AddProduct() {
       (imageUrl) => imageUrl !== id
     );
     setFormData({ ...formData, imageUrls: updatedImageUrls });
-    
   };
   return (
     <main className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Add Product</h1>
-      {error && <p>{error}</p>}
       <form
         className="flex flex-col sm:flex-row gap-4"
         onSubmit={submitHandler}
@@ -200,45 +198,50 @@ export default function AddProduct() {
               disabled={files.length === 0}
               className="p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80 disabled:pointer-events-none"
             >
-              upload
+              {uploading ? "uploading" : "upload"}
             </button>
           </div>
 
           <div className="flex flex-wrap justify-evenly gap-2">
-          {imageUrls &&
-            imageUrls.length > 0 &&
-            imageUrls.map((image) => (
-              <div key={image._id} className="relative border  border-green-700 rounded-lg">
-                <img
-                  className="h-20 w-20 object-contain rounded-lg"
-                  src={`/images/${image.name}`}
-                  srcSet={`/images/${image.name}`}
-                  alt={image.name}
-                />
-                <button
-                  type="button"
-                  className="absolute top-0 right-0 p-3 text-slate-700 hover:text-red-700 rounded-lg uppercase hover:opacity-75"
-                  onClick={() => deleteHandler(image._id)}
-                  disabled={isDeleting}
+            {imageUrls &&
+              imageUrls.length > 0 &&
+              imageUrls.map((image) => (
+                <div
+                  key={image._id}
+                  className="relative border  border-green-700 rounded-lg"
                 >
-                  <IoTrashBin /> 
-                </button>
-              </div>
-            ))}
+                  <img
+                    className="h-20 w-20 object-contain rounded-lg"
+                    src={`/images/${image.name}`}
+                    srcSet={`/images/${image.name}`}
+                    alt={image.name}
+                  />
+                  <button
+                    type="button"
+                    className="absolute top-0 right-0 p-3 text-slate-700 hover:text-red-700 rounded-lg uppercase hover:opacity-75"
+                    onClick={() => deleteHandler(image._id)}
+                    disabled={isDeleting}
+                  >
+                    <IoTrashBin />
+                  </button>
+                </div>
+              ))}
           </div>
-              <button
+          <button
             type="submit"
-            disabled={
-              // filesCount === 0 ||
-              imageUrls.length===0||
-              formData.imageUrls.length > 6 ||
-              formData.name.trim() === "" ||
-              formData.description.trim() === ""
-            }
+            // disabled={
+            //   // filesCount === 0 ||
+            //   imageUrls.length === 0 ||
+            //   formData.imageUrls.length > 6 ||
+            //   formData.name.trim() === "" ||
+            //   formData.description.trim() === ""
+            // }
             className="text-white uppercase bg-slate-700 p-3 rounded-lg hover:opacity-95 disabled:opacity-80"
           >
             Create Product
           </button>
+      {error && <p className="text-red-700">{error}</p>}
+
         </div>
       </form>
     </main>

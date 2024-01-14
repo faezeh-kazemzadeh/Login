@@ -208,7 +208,7 @@ export default function UpdateProduct() {
                   />
                   <button
                     type="button"
-                    className="absolute top-0 right-0 p-3 text-slate-700 hover:text-red-700 rounded-lg uppercase hover:opacity-75"
+                    className="absolute top-0 right-0 p-3 text-slate-700 disabled:hover:text-slate-700 hover:text-red-700 rounded-lg uppercase hover:opacity-75"
                     onClick={() => deleteHandler(image._id)}
                     disabled={product.imageUrls.length===1}
                   >

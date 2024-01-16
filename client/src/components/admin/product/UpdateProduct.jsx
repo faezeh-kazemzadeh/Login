@@ -42,6 +42,7 @@ export default function UpdateProduct() {
     if (e.target.type === "checkbox") {
       setProduct({ ...product, isPublished: e.target.checked });
     } else setProduct({ ...product, [e.target.name]: e.target.value });
+    console.log(product)
     dispatch(setHasUpdate(true));
   };
   const imageUploadHandler = async () => {
@@ -117,8 +118,9 @@ export default function UpdateProduct() {
               onChange={changeHandler}
               className="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
-              <option value="گل سر">گل سر</option>
-              <option value="پیکسل">پیکسل</option>
+                        <option value="hair care">Hair care</option>
+            <option value="Skin care">Skin care</option>
+            <option value="Make-up">Make-up</option>
             </select>
             <div className="flex flex-wrap gap-3">
               <div className="flex items-center gap-2 ">

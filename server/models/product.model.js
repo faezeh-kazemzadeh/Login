@@ -20,7 +20,7 @@ const productSchema = mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["گل سر", "پیکسل"],
+      enum: ["Hair care", "Skin care" ,"Make-up"],
     },
     imageUrls: [{
       type: mongoose.Types.ObjectId,
@@ -53,7 +53,7 @@ export const validate = (product)=>{
         regularPrice:Joi.number().required(),
         discount:Joi.number(),
         count:Joi.number().required(),
-        category:Joi.string().valid('گل سر' ,'پیکسل').required(),
+        category:Joi.string().valid("Hair care", "Skin care" ,"Make-up").required(),
         imageUrls:Joi.array().items(Joi.objectId()),
         isPublished: Joi.boolean()
     });

@@ -1,0 +1,50 @@
+
+.swiperStyle{
+    padding: auto auto 3rem 3rem;
+}
+
+.productCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .productImageBox{
+    /* min-height: 12rem; */
+    height: 20rem;
+    width: 100%;
+  }
+  .productImageBox img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+  .productContent{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding:.4rem 1rem;
+    gap: 0.15rem;
+
+  }
+  header{
+    font-size: .9rem;
+    font-weight: bold;
+  }
+  .productDiscountedPrice{
+    color: #d9000c;
+    font-size: .8rem;
+    font-weight: bold;
+  }
+  .price{
+    color: #66676e;
+    font-size: .7rem;
+  }
+  .productPrice{
+    text-decoration: line-through;
+  }

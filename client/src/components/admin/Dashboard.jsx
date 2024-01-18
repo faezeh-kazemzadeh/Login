@@ -1,9 +1,10 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import { FiSettings } from "react-icons/fi";
-import {Sidebar} from './index';
+import { Sidebar } from "./index";
+import { useThemeContext } from "../../context/ThemeProvider";
 export default function Dashboard() {
-  const activeMenu = true;
+  const { activeMenu } = useThemeContext();
 
   return (
     <div>
@@ -18,11 +19,13 @@ export default function Dashboard() {
           </button>
         </div>
         {activeMenu ? (
-          <div className="w-64 fixed sidebar dark:bg-secondary-bg bg-white">
-            <Sidebar/>
+          <div className="w-64 fixed left-0 top-0 sidebar dark:bg-secondary-bg bg-white">
+            <Sidebar />
           </div>
         ) : (
-          <div className="w-0 dark:bg-secondary-dark-bg"><Sidebar/></div>
+          <div className="w-0 dark:bg-secondary-dark-bg">
+            <Sidebar />
+          </div>
         )}
         <div
           className={
@@ -31,11 +34,10 @@ export default function Dashboard() {
               : "bg-main-bg dark:bg-main-bg  w-full min-h-screen flex-2 "
           }
         >
-             <div className="">
-        <Outlet />
-      </div>
+          <div className="">
+            <Outlet />
+          </div>
         </div>
-       
       </div>
       {/* <aside><h1>Admin Dashboard</h1>
       <ul>
@@ -52,7 +54,6 @@ export default function Dashboard() {
       
       
       </aside> */}
-    
     </div>
   );
 }

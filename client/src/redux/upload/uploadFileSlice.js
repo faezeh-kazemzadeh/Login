@@ -52,7 +52,7 @@ const imagesSlice = createSlice({
     builder.addCase(uploadImages.fulfilled, (state, action) => {
       (state.loading = false),
         // (state.imageUrls = [...state.imageUrls, ...action.payload.imageUrls]);
-      state.filesCount = state.imageUrls.length;
+        (state.filesCount = state.imageUrls.length);
     });
     builder.addCase(uploadImages.rejected, (state, action) => {
       state.error = action.payload;
@@ -78,4 +78,4 @@ const imagesSlice = createSlice({
 
 export default imagesSlice.reducer;
 export { uploadImages, removeImage };
-export const { emptyImages , setImages } = imagesSlice.actions;
+export const { emptyImages, setImages } = imagesSlice.actions;

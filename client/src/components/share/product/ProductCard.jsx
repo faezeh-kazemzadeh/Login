@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { TbBasketPlus } from "react-icons/tb";
 import styles from "./product.module.css";
 import { truncate } from "../../../utils/string";
 export default function ProductCard({ product }) {
@@ -17,17 +18,28 @@ export default function ProductCard({ product }) {
           alt={product.name}
         />
       </div>
-      <div className={styles.productContent }>
-        <header className={styles.productName}>{truncate(product.name,20)}</header>
+      <div className={styles.productContent}>
+        <header className={styles.productName}>
+          {truncate(product.name, 25)}
+        </header>
         <p className={styles.productDiscountedPrice}>
-          {product.discount>0 ? discountPrice : product.regularPrice}
+          {product.discount > 0 ? discountPrice : product.regularPrice}
         </p>
         <p className={styles.price}>
-         <span>Originally:</span> <span className={styles.productPrice}>{ product.regularPrice}</span>
+          <span>Originally:</span>{" "}
+          <span className={styles.productPrice}>{product.regularPrice}</span>{" "}
+          <span className={styles.productDiscount}>
+            {product.discount > 0 && `-${product.discount}%`}
+          </span>
         </p>
-        <span className={styles.productDiscount}>
-          {product.discount>0 && `${product.discount}%`}
-        </span>
+      </div>
+      <div className={styles.actions}>
+        <button type="button" className={styles.add}>
+          <TbBasketPlus />
+        </button>
+        <button type="button">
+          Details
+        </button>
       </div>
     </div>
   );

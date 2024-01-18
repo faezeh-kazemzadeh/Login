@@ -10,6 +10,7 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
+import styles from './product.module.css';
 export default function ProductSwiper() {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.products);
@@ -49,7 +50,7 @@ export default function ProductSwiper() {
           }}
           navigation={false}
           modules={[ Pagination, Navigation]}
-          className="mySwiper"
+          className={`${styles.mySwiper} mySwiper`}
         >
           {products.map((product) => (
             <SwiperSlide key={product._id}>

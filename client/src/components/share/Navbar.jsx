@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { Header, Layout, PrivateRoute, ProductDetail, UnAuthorized } from "../index";
-import { Home, SignIn, SignUp, About, Profile } from "../../pages/index";
+import { Home, SignIn, SignUp, About, Profile ,Products} from "../../pages/index";
 import {
   AllProducts,
   RemoveProduct,
@@ -24,7 +24,7 @@ export default function Navbar() {
       <Header />
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route path="/" element={<Home />} />
+          <Route index element={<Home />} />
           <Route
             element={<PrivateRoute allowedRoles={[ROLES.User, ROLES.Admin]} />}
           >
@@ -42,7 +42,7 @@ export default function Navbar() {
               currentUser ? <Navigate to="/" replace={true} /> : <SignUp />
             }
           />
-          <Route path="about" element={<About />} />
+          <Route path="products" element={<Products />} />
           <Route element={<PrivateRoute allowedRoles={[ROLES.Admin]} />}>
             <Route path="admin/dashboard/*" element={<Dashboard />}>
             <Route index element={<AddProduct />} />
@@ -52,6 +52,7 @@ export default function Navbar() {
               <Route path="product/getAll" element={<AllProducts />} />
             </Route>
           </Route>
+          
           <Route path="/about" element={<About />} />
 
             <Route path="/product/:id" element={<ProductDetail/>}/>

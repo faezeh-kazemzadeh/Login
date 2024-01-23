@@ -15,7 +15,9 @@ export default function ProductSwiper() {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.products);
   useEffect(() => {
-    dispatch(fetchProducts());
+    if (products.length===0){
+      dispatch(fetchProducts())
+      }
   }, []);
 
   const breakpoints = {

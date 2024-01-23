@@ -3,11 +3,13 @@ import userReducer from "./user/userSlice";
 import {persistReducer , persistStore} from 'redux-persist'
 import storage from "redux-persist/lib/storage";
 import productReducer from "./product/productsSlice";
-import imagesReducer from './upload/uploadFileSlice'
+import imagesReducer from './upload/uploadFileSlice';
+import cartReducer from "./cart/cartSlice";
 const rootReducer=combineReducers({
   user:userReducer,
   products:productReducer,
-  images:imagesReducer
+  images:imagesReducer,
+  cart:cartReducer
 // otherSlice: otherSliceReducer, // Exclude the slice you don't want to persist
 })
 const persistConfig={

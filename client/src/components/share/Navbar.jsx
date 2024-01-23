@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { Header, Layout, PrivateRoute, UnAuthorized } from "../index";
+import { Header, Layout, PrivateRoute, ProductDetail, UnAuthorized } from "../index";
 import { Home, SignIn, SignUp, About, Profile } from "../../pages/index";
 import {
   AllProducts,
@@ -54,6 +54,7 @@ export default function Navbar() {
           </Route>
           <Route path="/about" element={<About />} />
 
+            <Route path="/product/:id" element={<ProductDetail/>}/>
           <Route path="/unauthorized" element={<UnAuthorized />} />
           <Route path="/*" element={<UnAuthorized />} />
         </Route>

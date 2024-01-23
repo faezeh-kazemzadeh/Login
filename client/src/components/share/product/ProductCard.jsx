@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { TbBasketPlus } from "react-icons/tb";
+import { Link } from "react-router-dom";
+  import { TbBasketPlus } from "react-icons/tb";
 import styles from "./product.module.css";
 import { truncate } from "../../../utils/string";
 export default function ProductCard({ product }) {
@@ -37,9 +38,9 @@ export default function ProductCard({ product }) {
         <button type="button" className={styles.add}>
           <TbBasketPlus />
         </button>
-        <button type="button">
+        <Link to={`/product/${product._id}`}>
           Details
-        </button>
+        </Link>
       </div>
     </div>
   );

@@ -70,7 +70,7 @@ header {
 .productCard:hover .actions {
   display: flex;
 }
-.actions button {
+.actions button, .actions a {
   background: white;
   display: flex;
   padding: 0.5rem;

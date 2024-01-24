@@ -1,10 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-  import { TbBasketPlus } from "react-icons/tb";
+import { TbBasketPlus } from "react-icons/tb";
+import { IoTrashOutline } from "react-icons/io5";
+import { TbListDetails } from "react-icons/tb";
 import styles from "./product.module.css";
 import { truncate } from "../../../utils/string";
+import {
+  addToCart,
+  removeFromCart,
+  increase,
+  decrease,
+} from "../../../redux/cart/cartSlice";
+import { productQuantity } from "../../../utils/helper";
+import { useSelector, useDispatch } from "react-redux";
 export default function ProductCard({ product }) {
+  const cart = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
   const [discountPrice, setDiscountPrice] = useState(0);
+  const quantity = productQuantity(cart, product._id);
   useEffect(() => {
     const discountAmount = (product.regularPrice * product.discount) / 100;
     const calculatedDiscountPrice = product.regularPrice - discountAmount;
@@ -34,13 +47,41 @@ export default function ProductCard({ product }) {
           </span>
         </p>
       </div>
-      <div className={styles.actions}>
-        <button type="button" className={styles.add}>
-          <TbBasketPlus />
-        </button>
-        <Link to={`/product/${product._id}`}>
-          Details
-        </Link>
+      <div className={styles.transparentDiv}>
+        <div className={styles.actions}>
+          <Link to={`/product/${product._id}`}>
+            <TbListDetails />
+          </Link>
+          <div className={styles.buttons}>
+            {quantity === 1 && (
+              <button
+                type="button"
+                onClick={() => dispatch(removeFromCart(product))}
+              >
+                <IoTrashOutline />
+              </button>
+            )}
+            {quantity > 1 && (
+              <button type="button" onClick={() => dispatch(decrease(product))}>
+                -
+              </button>
+            )}
+            {!!quantity && <span>{quantity}</span>}
+            {quantity === 0 ? (
+              <button
+                type="button"
+                className={styles.add}
+                onClick={() => dispatch(addToCart(product))}
+              >
+                <TbBasketPlus />
+              </button>
+            ) : (
+              <button type="button" onClick={() => dispatch(increase(product))}>
+                +
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

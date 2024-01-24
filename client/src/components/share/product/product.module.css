@@ -56,21 +56,24 @@ header {
 .productPrice {
   text-decoration: line-through;
 }
-.actions {
+.actions,
+.buttons {
+  display: flex;
+  justify-content: space-between;
+}
+.transparentDiv {
   position: absolute;
   display: none;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
   height: 100%;
   width: 100%;
   background: rgba(0, 0, 0, 0.1);
   transition-duration: 0.3s;
 }
-.productCard:hover .actions {
-  display: flex;
+.productCard:hover .transparentDiv {
+  display: block;
 }
-.actions button, .actions a {
+.actions button,
+.actions a {
   background: white;
   display: flex;
   padding: 0.5rem;
@@ -79,7 +82,24 @@ header {
   justify-content: center;
   border-radius: 0.5rem;
 }
-.actions button.add {
-  height: 2.5rem;
-  width: 2.5rem;
+
+.actions button,
+.actions a {
+  padding: 1rem;
+  font-size: 1.5rem;
+  height: 3rem;
+  width: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(51, 65, 85);
+  color: white;
+  margin: 0.2rem;
+  border-radius: 3px;
+}
+.actions span {
+  height: 3rem;
+  width: 3rem;
+  text-align: center;
+  line-height: 3rem;
 }

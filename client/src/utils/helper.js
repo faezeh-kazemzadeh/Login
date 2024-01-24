@@ -10,7 +10,7 @@ export const totalPrice =(products)=>{
 }
 
 export const productQuantity=(state,id)=>{
-    const index= state.selectedItems.find(item=>item._id===id)
+    const index= state.selectedItems.findIndex(item=>item._id===id)
     if(index === -1){
         return 0
     }else{

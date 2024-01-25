@@ -5,8 +5,11 @@ export const sumProducts =(products)=>{
 }
 
 export const totalPrice =(products)=>{
-    return products.reduce((total,product)=> total + product.regularPrice*product.quantity,0).toFixed(2)
-  
+    const regularPrice= products.reduce((total,product)=> total + product.regularPrice*product.quantity,0).toFixed(2)
+    const discountedPrice= products.reduce((total,product)=> total + (product.regularPrice*(100-product.discount)/100)*product.quantity,0).toFixed(2)
+  return{
+    regularPrice,discountedPrice
+  }
 }
 
 export const productQuantity=(state,id)=>{

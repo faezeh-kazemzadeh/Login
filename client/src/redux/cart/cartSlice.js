@@ -3,7 +3,9 @@ import { sumProducts, totalPrice } from "../../utils/helper";
 
 const initialState = {
   selectedItems: [],
-  total: 0,
+  total: {
+    regularPrice:0,discountedPrice:0
+  },
   itemsCounter: 0,
   checkOut: false,
 };

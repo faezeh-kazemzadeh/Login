@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../../../redux/product/productsSlice";
 import { setHasUpdate } from "../../../redux/product/productsSlice";
+import { truncate } from "../../../utils/string";
 export default function AllProducts() {
   // const { updateProducts } = useProducts();
   // const {products} = useProducts();
@@ -79,7 +80,7 @@ export default function AllProducts() {
                           />}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 font-medium">
-                          {product.name}
+                          {truncate(product.name,30)}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           {product.regularPrice}

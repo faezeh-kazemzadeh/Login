@@ -9,3 +9,11 @@ export const add = async(req,res,next)=>{
         next(error)
     }
 }
+export const getAll = async(req,res,next)=>{
+    try {
+        const categories = await Category.find()
+        res.status(200).json({categories})
+    } catch (error) {
+        next(error)
+    }
+}

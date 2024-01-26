@@ -18,7 +18,7 @@ export default function AddProduct() {
     imageUrls: [],
     name: "",
     description: "",
-    category:"Skin care",
+    category: "65b3824d20a2ec7d2cd809d9",
     regularPrice: 0,
     discount: 0,
     count: 0,
@@ -26,6 +26,17 @@ export default function AddProduct() {
   });
   const [formData, setFormData] = useState(initialFormData);
   const [error, setError] = useState("");
+  const [categories, setCategories] = useState({})
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const response = await fetch("/api/category/getAll");
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status
+        }`);
+       const data=await response.json();
+     setCategories(data.categories);
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (productTemp?.imageUrls.length > 0) {
@@ -63,7 +74,8 @@ export default function AddProduct() {
   };
   const submitHandler = async (e) => {
     e.preventDefault();
-    if(formData.imageUrls.length<1) return setError('Just pick minimum One Image or maximum 6 Images')
+    if (formData.imageUrls.length < 1)
+      return setError("Just pick minimum One Image or maximum 6 Images");
     dispatch(addProduct(formData))
       .unwrap()
       .then((data) => {
@@ -110,7 +122,7 @@ export default function AddProduct() {
             onChange={changeHandler}
             required
             minLength="5"
-            maxLength="250"
+            // maxLength="250"
             placeholder="Description"
             className=" border p-3 rounded-lg"
             value={formData.description}
@@ -122,9 +134,11 @@ export default function AddProduct() {
             onChange={changeHandler}
             className="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
-            <option value="Hair care">Hair care</option>
-            <option value="Skin care">Skin care</option>
-            <option value="Make-up">Make-up</option>
+            {categories.length>0 && categories.map(category=>(
+
+            <option value={category._id} key={category._id}>{category.name}</option>
+            ))}
+      
           </select>
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-2 ">
@@ -241,8 +255,7 @@ export default function AddProduct() {
           >
             Create Product
           </button>
-      {error && <p className="text-red-700">{error}</p>}
-
+          {error && <p className="text-red-700">{error}</p>}
         </div>
       </form>
     </main>

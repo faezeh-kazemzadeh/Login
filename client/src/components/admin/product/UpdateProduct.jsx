@@ -15,6 +15,7 @@ import {
 export default function UpdateProduct() {
   const params = useParams();
   // const { updateProducts } = useProducts();
+  const [categories, setCategories] = useState({});
   const [updated, setUpdated] = useState(false);
   // const { products } = useProducts();
   const { products } = useSelector((state) => state.products);
@@ -23,6 +24,16 @@ export default function UpdateProduct() {
   const [product, setProduct] = useState(undefined);
   const [files, setFiles] = useState();
   const { productTemp } = useSelector((state) => state.products);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const response = await fetch("/api/category/getAll");
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      setCategories(data.categories);
+    };
+    fetchCategories();
+  }, []);
   useEffect(() => {
     const foundProduct = products.find((product) => product._id === params.id);
     setProduct(foundProduct);
@@ -42,7 +53,7 @@ export default function UpdateProduct() {
     if (e.target.type === "checkbox") {
       setProduct({ ...product, isPublished: e.target.checked });
     } else setProduct({ ...product, [e.target.name]: e.target.value });
-    console.log(product)
+    console.log(product);
     dispatch(setHasUpdate(true));
   };
   const imageUploadHandler = async () => {
@@ -52,8 +63,8 @@ export default function UpdateProduct() {
         imgData.append("files", files[i]);
       }
       dispatch(uploadImages(imgData));
-    }else{
-      console.log('Product must have at least one picture ')
+    } else {
+      console.log("Product must have at least one picture ");
     }
   };
   const submitHandler = async (e) => {
@@ -106,7 +117,7 @@ export default function UpdateProduct() {
               onChange={changeHandler}
               required
               minLength="5"
-              maxLength="250"
+              // maxLength="250"
               placeholder="Description"
               className=" border p-3 rounded-lg"
               value={product.description}
@@ -118,9 +129,13 @@ export default function UpdateProduct() {
               onChange={changeHandler}
               className="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
-                        <option value="Hair care">Hair care</option>
-            <option value="Skin care">Skin care</option>
-            <option value="Make-up">Make-up</option>
+              {" "}
+              {categories.length > 0 &&
+                categories.map((category) => (
+                  <option value={category._id} key={category._id}>
+                    {category.name}
+                  </option>
+                ))}
             </select>
             <div className="flex flex-wrap gap-3">
               <div className="flex items-center gap-2 ">
@@ -199,26 +214,29 @@ export default function UpdateProduct() {
               </button>
             </div>
             <div className="flex flex-wrap justify-evenly gap-2">
-            {product.imageUrls &&
-              product.imageUrls.map((image) => (
-                <div key={image._id} className="relative border  border-green-700 rounded-lg">
-                  <img
-                    className="h-20 w-20 object-contain rounded-lg"
-                    src={`/images/${image.name}`}
-                    srcSet={`/images/${image.name}`}
-                    alt={image.name}
-                  />
-                  <button
-                    type="button"
-                    className="absolute top-0 right-0 p-3 text-slate-700 disabled:hover:text-slate-700 hover:text-red-700 rounded-lg uppercase hover:opacity-75"
-                    onClick={() => deleteHandler(image._id)}
-                    disabled={product.imageUrls.length===1}
+              {product.imageUrls &&
+                product.imageUrls.map((image) => (
+                  <div
+                    key={image._id}
+                    className="relative border  border-green-700 rounded-lg"
                   >
-                    <IoTrashBin />
-                  </button>
-                </div>
-              ))}
-              </div>
+                    <img
+                      className="h-20 w-20 object-contain rounded-lg"
+                      src={`/images/${image.name}`}
+                      srcSet={`/images/${image.name}`}
+                      alt={image.name}
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-0 right-0 p-3 text-slate-700 disabled:hover:text-slate-700 hover:text-red-700 rounded-lg uppercase hover:opacity-75"
+                      onClick={() => deleteHandler(image._id)}
+                      disabled={product.imageUrls.length === 1}
+                    >
+                      <IoTrashBin />
+                    </button>
+                  </div>
+                ))}
+            </div>
             <button
               type="submit"
               // disabled={!updated}
@@ -226,7 +244,6 @@ export default function UpdateProduct() {
             >
               update
             </button>
-  
           </div>
         </form>
       )}

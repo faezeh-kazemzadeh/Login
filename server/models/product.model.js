@@ -18,9 +18,13 @@ const productSchema = mongoose.Schema(
       minlength: 10,
       required: true,
     },
+    // category: {
+    //   type: String,
+    //   enum: ["Hair care", "Skin care" ,"Make-up"],
+    // },
     category: {
-      type: String,
-      enum: ["Hair care", "Skin care" ,"Make-up"],
+      type: mongoose.Types.ObjectId,
+      ref: 'Category',
     },
     imageUrls: [{
       type: mongoose.Types.ObjectId,
@@ -53,7 +57,8 @@ export const validate = (product)=>{
         regularPrice:Joi.number().required(),
         discount:Joi.number(),
         count:Joi.number().required(),
-        category:Joi.string().valid("Hair care", "Skin care" ,"Make-up").required(),
+        // category:Joi.string().valid("Hair care", "Skin care" ,"Make-up").required(),
+        category:Joi.objectId(),
         imageUrls:Joi.array().items(Joi.objectId()),
         isPublished: Joi.boolean()
     });

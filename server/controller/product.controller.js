@@ -1,6 +1,7 @@
 import _ from "lodash";
-
+import fs from 'fs'
 import { Product, validate } from "../models/product.model.js";
+import { Image } from "../models/Image.model.js";
 import { errorHandler } from "../utils/error.js";
 export const add = async (req, res, next) => {
   console.log(req.body)
@@ -62,8 +63,26 @@ export const update=async(req,res,next)=>{
 export const remove=async(req,res,next)=>{
   try {
     console.log(req.params.id)
-    await Product.findByIdAndDelete(req.params.id)
-    res.status(200).json({success:true})
+    const product = await Product.findById(req.params.id).populate('imageUrls','path')
+    if(!product){
+      return next(errorHandler("Product not found"))
+    }
+    const imageUrls = product.imageUrls;
+
+
+   await imageUrls?.forEach(imageUrl => {
+      fs.unlink(imageUrl.path,async(err)=>{
+        if(err){
+          return next(
+            errorHandler(500, 'Error deleting image file')
+          )
+        }
+        await Image.deleteOne({ _id: imageUrl._id });
+        
+      })
+    });
+    await Product.deleteOne(product)
+    res.json({success: true, message:"Deleted Successfully!"});
   } catch (error) {
     next(error)
   }

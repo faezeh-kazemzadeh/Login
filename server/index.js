@@ -6,9 +6,10 @@ import userRouter from "./routes/user.route.js";
 import authRouter from "./routes/auth.route.js";
 import productRouter from "./routes/product.route.js";
 import imageRouter from "./routes/image.route.js";
+import contentRouter from "./routes/content.route.js";
+import categoryRouter from "./routes/category.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import multer from "multer";
 
 dotenv.config();
 
@@ -39,6 +40,8 @@ app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/product", productRouter);
 app.use("/api/image", imageRouter);
+app.use('/api/content',contentRouter)
+app.use('/api/category',categoryRouter)
 
 app.use((err, req, res, next) => {
   console.error(err)

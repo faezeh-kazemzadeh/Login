@@ -1,0 +1,22 @@
+.imagesBox{
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.imageDiv{
+    width: 5rem;
+    height: 5rem;
+    border-radius: .5rem;
+    overflow: hidden;
+    position: relative;
+}
+.imageDiv img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+.imageDiv button{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}

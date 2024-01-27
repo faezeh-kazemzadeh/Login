@@ -20,3 +20,11 @@ export const productQuantity=(state,id)=>{
         return state.selectedItems[index].quantity
     }
 }
+
+export const getCategories=async()=>{
+  const response = await fetch("/api/category/getAll");
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status
+    }`);
+    const data= await response.json();
+    return data.categories
+}

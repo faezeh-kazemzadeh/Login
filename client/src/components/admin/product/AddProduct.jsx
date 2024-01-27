@@ -7,6 +7,7 @@ import {
   uploadImages,
   removeImage,
 } from "../../../redux/upload/uploadFileSlice";
+import { getCategories } from "../../../utils/helper";
 export default function AddProduct() {
   const dispatch = useDispatch();
   const { imageUrls } = useSelector((state) => state.products.productTemp);
@@ -18,7 +19,7 @@ export default function AddProduct() {
     imageUrls: [],
     name: "",
     description: "",
-    category: "65b3824d20a2ec7d2cd809d9",
+    category: "",
     regularPrice: 0,
     discount: 0,
     count: 0,
@@ -28,14 +29,7 @@ export default function AddProduct() {
   const [error, setError] = useState("");
   const [categories, setCategories] = useState({})
   useEffect(() => {
-    const fetchCategories = async () => {
-      const response = await fetch("/api/category/getAll");
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status
-        }`);
-       const data=await response.json();
-     setCategories(data.categories);
-    };
-    fetchCategories();
+    getCategories().then(categories=>setCategories(categories))
   }, []);
 
   useEffect(() => {
@@ -130,10 +124,11 @@ export default function AddProduct() {
           <select
             name="category"
             id="category"
-            value={formData.category}
+            // value={formData.category}
             onChange={changeHandler}
             className="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
+            <option value='default'>Select a Category...</option>
             {categories.length>0 && categories.map(category=>(
 
             <option value={category._id} key={category._id}>{category.name}</option>

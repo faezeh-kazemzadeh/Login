@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProducts } from "../../../context/ProductProvider";
 import { useSelector, useDispatch } from "react-redux";
-import { setHasUpdate } from "../../../redux/product/productsSlice";
+import { fetchProducts, setHasUpdate } from "../../../redux/product/productsSlice";
 import {
   updateProduct,
   emptyProductTemp,
@@ -12,6 +12,7 @@ import {
   uploadImages,
   removeImage,
 } from "../../../redux/upload/uploadFileSlice";
+import { getCategories } from "../../../utils/helper";
 export default function UpdateProduct() {
   const params = useParams();
   // const { updateProducts } = useProducts();
@@ -24,20 +25,18 @@ export default function UpdateProduct() {
   const [product, setProduct] = useState(undefined);
   const [files, setFiles] = useState();
   const { productTemp } = useSelector((state) => state.products);
+  useEffect(()=>{
+    if(products.length===0){
+      dispatch(fetchProducts())
+    }
+  },[])
   useEffect(() => {
-    const fetchCategories = async () => {
-      const response = await fetch("/api/category/getAll");
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
-      setCategories(data.categories);
-    };
-    fetchCategories();
+    getCategories().then(categories=>setCategories(categories))
   }, []);
   useEffect(() => {
     const foundProduct = products.find((product) => product._id === params.id);
     setProduct(foundProduct);
-  }, []);
+  }, [products]);
   useEffect(() => {
     if (productTemp?.imageUrls.length > 0) {
       setProduct({
@@ -53,7 +52,6 @@ export default function UpdateProduct() {
     if (e.target.type === "checkbox") {
       setProduct({ ...product, isPublished: e.target.checked });
     } else setProduct({ ...product, [e.target.name]: e.target.value });
-    console.log(product);
     dispatch(setHasUpdate(true));
   };
   const imageUploadHandler = async () => {
@@ -69,8 +67,6 @@ export default function UpdateProduct() {
   };
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(product);
-
     dispatch(updateProduct(product))
       .unwrap()
       .then((data) => {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { IoTrashBin } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 
-import { addProduct } from "../../../redux/product/productsSlice";
+import { addProduct,newProductImages } from "../../../redux/product/productsSlice";
 import {
   uploadImages,
   removeImage,
@@ -27,9 +27,9 @@ export default function AddProduct() {
   });
   const [formData, setFormData] = useState(initialFormData);
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState({})
+  const [categories, setCategories] = useState({});
   useEffect(() => {
-    getCategories().then(categories=>setCategories(categories))
+    getCategories().then((categories) => setCategories(categories));
   }, []);
 
   useEffect(() => {
@@ -59,7 +59,12 @@ export default function AddProduct() {
         imgData.append("files", files[i]);
       }
       setUploading(true);
-      dispatch(uploadImages(imgData));
+      dispatch(uploadImages(imgData))
+        .unwrap()
+        .then((data) => {
+        dispatch(newProductImages(data.imageUrls));
+        })
+        .catch((err) => console.log(err));
       setUploading(false);
     } else {
       setError("Just pick minimum One Image or maximum 6 Images");
@@ -128,12 +133,13 @@ export default function AddProduct() {
             onChange={changeHandler}
             className="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
-            <option value='default'>Select a Category...</option>
-            {categories.length>0 && categories.map(category=>(
-
-            <option value={category._id} key={category._id}>{category.name}</option>
-            ))}
-      
+            <option value="default">Select a Category...</option>
+            {categories.length > 0 &&
+              categories.map((category) => (
+                <option value={category._id} key={category._id}>
+                  {category.name}
+                </option>
+              ))}
           </select>
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-2 ">

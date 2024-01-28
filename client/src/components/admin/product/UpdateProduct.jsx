@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProducts } from "../../../context/ProductProvider";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchProducts, setHasUpdate } from "../../../redux/product/productsSlice";
+import {
+  fetchProducts,
+  newProductImages,
+  setHasUpdate,
+} from "../../../redux/product/productsSlice";
 import {
   updateProduct,
   emptyProductTemp,
@@ -25,13 +29,13 @@ export default function UpdateProduct() {
   const [product, setProduct] = useState(undefined);
   const [files, setFiles] = useState();
   const { productTemp } = useSelector((state) => state.products);
-  useEffect(()=>{
-    if(products.length===0){
-      dispatch(fetchProducts())
-    }
-  },[])
   useEffect(() => {
-    getCategories().then(categories=>setCategories(categories))
+    if (products.length === 0) {
+      dispatch(fetchProducts());
+    }
+  }, []);
+  useEffect(() => {
+    getCategories().then((categories) => setCategories(categories));
   }, []);
   useEffect(() => {
     const foundProduct = products.find((product) => product._id === params.id);
@@ -60,7 +64,10 @@ export default function UpdateProduct() {
       for (let i = 0; i < files?.length; i++) {
         imgData.append("files", files[i]);
       }
-      dispatch(uploadImages(imgData));
+      dispatch(uploadImages(imgData))
+        .unwrap()
+        .then((data) => dispatch(newProductImages(data.imageUrls)))
+        .catch((err) => console.log(err));
     } else {
       console.log("Product must have at least one picture ");
     }

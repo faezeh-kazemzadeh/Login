@@ -13,15 +13,19 @@ const initialState = {
 
 const uploadImages = createAsyncThunk(
   "images/upload",
-  (images, { dispatch }) => {
+  (images, { dispatch, rejectWithValue }) => {
     return fetch("/api/image/upload/multiple", {
       method: "POST",
       body: images,
     })
       .then((response) => response.json())
       .then((data) => {
-        dispatch(newProductImages(data.imageUrls));
-        return data;
+        // dispatch(newProductImages(data.imageUrls));
+        if (data.success === true) {
+          return data;
+        } else {
+          rejectWithValue(data.message);
+        }
       });
   }
 );

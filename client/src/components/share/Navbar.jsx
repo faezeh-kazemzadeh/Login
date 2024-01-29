@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { Header, Layout, PrivateRoute, ProductDetail, UnAuthorized } from "../index";
 import { Home, SignIn, SignUp, About, Profile ,Products} from "../../pages/index";
 import {
+  ContentAdd, 
   AllProducts,
   RemoveProduct,
   AddProduct,
@@ -50,6 +51,8 @@ export default function Navbar() {
               <Route path="product/update/:id" element={<UpdateProduct />} />
               <Route path="product/delete" element={<RemoveProduct />} />
               <Route path="product/getAll" element={<AllProducts />} />
+            <Route path="content/add" element={<ContentAdd/>}/>
+
             </Route>
           </Route>
           

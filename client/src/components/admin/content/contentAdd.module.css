@@ -1,7 +1,12 @@
 .imagesBox{
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
     gap: 1rem;
+    /* justify-content: space-between; */
     flex-wrap: wrap;
+    height: 40vh;
+    overflow: auto;
+    padding: 1.8rem;
 }
 .imageDiv{
     width: 5rem;

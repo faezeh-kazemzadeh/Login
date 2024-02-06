@@ -69,7 +69,7 @@ const addProduct = createAsyncThunk(
       .then((res) => res.json())
       .then((data) => {
         if (data.success === true) {
-          dispatch(emptyImages());
+          // dispatch(emptyImages());
           dispatch(emptyProductTemp());
           return data;
         } else {

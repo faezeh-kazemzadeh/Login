@@ -8,7 +8,7 @@ import cartReducer from "./cart/cartSlice";
 const rootReducer=combineReducers({
   user:userReducer,
   products:productReducer,
-  images:imagesReducer,
+  // images:imagesReducer,
   cart:cartReducer
 // otherSlice: otherSliceReducer, // Exclude the slice you don't want to persist
 })
@@ -16,7 +16,7 @@ const persistConfig={
     key:'root',
     storage,
     version:1,
-    blacklist:['products','images']
+    blacklist:['products']
     
       // blacklist: ['otherSlice'], // Exclude the slice you don't want to persist
 }

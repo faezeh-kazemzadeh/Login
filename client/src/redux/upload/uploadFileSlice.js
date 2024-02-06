@@ -21,12 +21,15 @@ const uploadImages = createAsyncThunk(
       .then((response) => response.json())
       .then((data) => {
         // dispatch(newProductImages(data.imageUrls));
-        if (data.success === true) {
-          return data;
-        } else {
-          rejectWithValue(data.message);
-        }
-      });
+        return data;
+
+        // if (data.success === true) {
+        //   return data;
+        // } else {
+        //   rejectWithValue(data);
+        // }
+      })
+      // .catch((error)=>rejectWithValue(error));
   }
 );
 const removeImage = createAsyncThunk("images/remove", (id, { dispatch }) => {

@@ -53,7 +53,8 @@ export default function Cart() {
         ))}
         <div>
           <p>total items : {cart.itemsCounter}</p>
-          <p>totalPrice : ${cart.total}</p>
+          <p>totalPrice : ${cart.total.regularPrice}</p>
+          <p>Discounted Price : ${cart.total.discountedPrice}</p>
           <button type="button">CheckOut</button>
         </div>
         </>
